@@ -151,8 +151,8 @@ public class LivingObject : MonoBehaviour
         {
             UIManager.Instance.ShowDamageText(transform.position, damageAmount);
             health -= damageAmount;
-            //player라면 체력확인하기아..바본가?
-            // 체력바 업데이트
+            SoundManager.Instance.SFXPlay("hit", 127);
+
             if (healthSlider != null)
             {
                 healthSlider.value = health;
@@ -174,6 +174,8 @@ public class LivingObject : MonoBehaviour
     {
         health = Mathf.Min(health + amount, maxHealth);
         // 필요하면 힐 이펙트, 사운드 등 추가
+        SoundManager.Instance.SFXPlay("heal", 123);
+
     }
     private IEnumerator StartInvincibility()
     {

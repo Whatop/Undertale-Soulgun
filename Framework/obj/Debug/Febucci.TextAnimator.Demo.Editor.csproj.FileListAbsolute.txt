@@ -1,2 +1,4 @@
 D:\github\FrameWork\Framework\obj\Debug\Febucci.TextAnimator.Demo.Editor.csproj.AssemblyReference.cache
 D:\github\FrameWork\Framework\obj\Debug\Febucci.TextAnimator.Demo.Editor.csproj.CoreCompileInputs.cache
+C:\Users\MSI\Documents\GitHub\Undertale_yellow\FrameWork\obj\Debug\Febucci.TextAnimator.Demo.Editor.csproj.AssemblyReference.cache
+C:\Users\MSI\Documents\GitHub\Undertale_yellow\FrameWork\obj\Debug\Febucci.TextAnimator.Demo.Editor.csproj.CoreCompileInputs.cache

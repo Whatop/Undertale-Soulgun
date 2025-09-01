@@ -176,10 +176,6 @@ public class BulletController : MonoBehaviour
                     break;
             }
         }
-        else //플레이어
-        {
-
-        }
     }
     public void InitializeBullet(Vector2 fireDirection, float bulletSpeed, float bulletAccuracy, float bulletDamage, float maxRange,
                                  float delay = 0, BulletType type = default, Transform target = null, int size = 0, bool isfreind = false, bool isheal = false)
@@ -247,7 +243,6 @@ public class BulletController : MonoBehaviour
 
     void Update()
     {
-
         // 거리 누적
         traveledDistance = Vector2.Distance(transform.position, initialPosition);
         if (traveledDistance >= maxrange&&bulletType != BulletType.GasterBlaster 
@@ -599,15 +594,26 @@ public class BulletController : MonoBehaviour
         // **회복 탄환 처리**: 플레이어나 적에게 닿으면 체력 회복
         if (isHeal)
         {
-            if (other.CompareTag("Enemy") || other.CompareTag("Soul"))
+            if (other.CompareTag("Enemy") && isFreind)
             {
                 LivingObject target = other.GetComponent<LivingObject>();
                 if (target != null)
                 {
                     target.Heal(damage);  // 데미지 대신 해당 값만큼 체력 회복
+                    DestroyBullet();
                 }
             }
-            DestroyBullet();
+            else if (other.CompareTag("Soul") && !isFreind)
+            {
+                LivingObject target = GameManager.Instance.GetPlayerData().player.GetComponent<LivingObject>();
+                ObjectState state = GameManager.Instance.GetPlayerData().player.GetComponent<PlayerMovement>().objectState;
+                if (target != null && state != ObjectState.Roll)
+                    if (target != null)
+                {
+                    target.Heal(damage);  // 데미지 대신 해당 값만큼 체력 회복
+                    DestroyBullet();
+                }
+            }
             return;  // 회복 탄환은 다른 충돌 로직 처리하지 않음
         }
 
@@ -622,7 +628,7 @@ public class BulletController : MonoBehaviour
         }
         else if (other.CompareTag("Soul") && !isFreind)
         {
-            LivingObject player = other.GetComponent<LivingObject>();
+            LivingObject player = GameManager.Instance.GetPlayerData().player.GetComponent<LivingObject>();
             ObjectState state = GameManager.Instance.GetPlayerData().player.GetComponent<PlayerMovement>().objectState;
             if (player != null && state != ObjectState.Roll)
                 player.TakeDamage(damage);

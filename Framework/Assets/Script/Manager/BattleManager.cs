@@ -57,7 +57,7 @@ public class BattleManager : MonoBehaviour
     public GameObject[] enemyPrefabs;  // 적 프리팹 배열
     public Room currentRoom;  // 현재 방
 
-    public Transform[] bulletPoints;
+    public Transform[] bulletPoints; // 플라위 전용
     public Transform nonePoint;
     public GameObject floweybulletprefab;
 
@@ -93,7 +93,46 @@ public class BattleManager : MonoBehaviour
     public Transform[] bulletspawnPoint; // 총알 생성위치
     public Transform spawnParent;   // 생성된 오브젝트를 담을 부모 오브젝트 (정리용)
 
+    private bool _floweyHealHit = false; // 힐탄을 맞았는가?
+    public IEnumerator FloweyTutorialSequence()
+    {
+        // 1) 소울 주입(연출+UI 전환)
+        HandleSpecialEvent("ChangeSoul", ""); // 이미 구현된 이벤트 활용
+        yield return new WaitForSeconds(1.2f);
 
+        // 2) 튜토 총 발사 허용(또는 제한 해제)
+        HandleSpecialEvent("tutorialShot", "");
+        yield return new WaitForSeconds(0.3f);
+
+        // 3) 힐탄 테스트 시작(맞으면 회복 연출, 피하면 도발 대사)
+        _floweyHealHit = false;
+        BeginHealTest(windowSec: 2.5f); // 아래 메서드 추가
+        yield return new WaitForSeconds(2.5f);
+
+        if (_floweyHealHit)
+        {
+            // 힐에 맞은 분기
+            currentTypeEffect.SetMsg("...그걸 일부러 맞다니? 재밌네.", OnSentenceComplete, 60, "Smile");
+        }
+        else
+        {
+            // 힐을 피한 분기
+            currentTypeEffect.SetMsg("치료도 피하다니? 네가 뭘 원하는지 알겠어.", OnSentenceComplete, 60, "Sneer");
+        }
+    }
+    public void ReportHealHit()
+    {
+        _floweyHealHit = true;
+    }
+
+    // BattleManager
+    private void BeginHealTest(float windowSec)
+    {
+        // 플레이어 근처 혹은 화면 중앙에서 힐탄 하나 생성
+        // prefab: "Kindness_Heal" 으로 풀에서 꺼냄
+        SetAttack("Normal", 30, 0f); // 예: 가운데 포인트
+                                     // ↑ 내부에서 SpawnBullets 호출 → prefab 인자를 "Kindness_Heal"로 넘기도록 오버로드 추가해도 됨
+    }
     [SerializeField]
     private List<BulletPool> bulletPools;
 
@@ -149,15 +188,17 @@ public class BattleManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             //SetAttack("Split", 0, 1f);//분열
-            int value = UnityEngine.Random.Range(0, 59);
-            SetAttack("GasterBlaster", value);//회오리
-
+            // int value = UnityEngine.Random.Range(0, 59);
+            // SetAttack("GasterBlaster", value);//회오리
+            ExecuteAttack("HealSetting");
 
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            SetAttack("Spiral_S", 10, 1f);//회오리
-            SetAttack("Spiral_S", 24, 1f);//회오리
+            //SetAttack("Spiral_S", 10, 1f);//회오리
+            //SetAttack("Spiral_S", 24, 1f);//회오리
+            ExecuteAttack("ShotThePlayer");
+
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
@@ -652,19 +693,15 @@ public class BattleManager : MonoBehaviour
     {
         switch (attack)
         {
-            case "Attack1":
-                Debug.Log("Executing Attack 1");
-                // SpawnAndMoveBullets();
-                SetAttack("Directional");//벙형
-                SetAttack("Spiral");//회오리
-                SetAttack("Split");//분열
-                SetAttack("Homing");//유도
-                SetAttack("Homing");
+            case "HealSetting":
+                for (int i = 0; i < bulletPoints.Length; i++)
+                {
+                    SpawnBulletAtPosition(BulletType.FixedPoint, bulletPoints[i].position, Quaternion.identity, Vector2.right, "Flowey_Normal", 0, 0, false, 15, 5, 1, 5, true);
+                }
                 break;
 
-            case "Attack2":
-                Debug.Log("Executing Attack 2");
-
+            case "ShotThePlayer":
+                ChangeAllBulletTypes(BulletType.Normal);
                 //  MoveBulletsToPlayer(true);  // accelerate = true
                 break;
 
@@ -705,7 +742,6 @@ public class BattleManager : MonoBehaviour
     {
         switch (attack)
         {
-
             case "Left":
                 SpawnBullets(BulletType.Directional, bulletpoint, delay, Vector2.left.normalized);
                 break;
@@ -772,8 +808,10 @@ public class BattleManager : MonoBehaviour
        float delay = 0f,
        Vector2 dir = default,
        int size = 0,
-       string prefab = "Flowey_Normal"
-   )
+       string prefab = "Flowey_Normal",
+       bool isfriend = false,
+       bool isheal = false
+    )
     {
         if (prefab == "None") return;
 
@@ -794,7 +832,7 @@ public class BattleManager : MonoBehaviour
         if (bc != null)
         {
             Transform target = bulletpoint != -1 ? bulletSpawnTransforms[bulletpoint] : null;
-            bc.InitializeBullet(dir, 5f, 0f, 1, 15f, delay, bulletType, target, size);
+            bc.InitializeBullet(dir, 5f, 0f, 1, 15f, delay, bulletType, target, size, isfriend, isheal);
             activeBullets.Add(bullet);
         }
     }
@@ -811,7 +849,8 @@ public class BattleManager : MonoBehaviour
     float maxrange = 5f,
     float bulletspeed = 5f,
     float bulletaccuracy = 1f,
-    float bulletdamge = 1f
+    float bulletdamge = 1f,
+       bool isheal = false
 )
     {
         if (prefab == "None") return null;
@@ -826,7 +865,7 @@ public class BattleManager : MonoBehaviour
         BulletController bc = bullet.GetComponent<BulletController>();
         if (bc != null)
         {
-            bc.InitializeBullet(dir, bulletspeed, bulletaccuracy, bulletdamge, maxrange, delay, type, null, size, isfriends);
+            bc.InitializeBullet(dir, bulletspeed, bulletaccuracy, bulletdamge, maxrange, delay, type, null, size, isfriends, isheal);
             activeBullets.Add(bullet);
         }
         return bullet;
@@ -857,6 +896,12 @@ public class BattleManager : MonoBehaviour
                 //@@@수정할거
                 gameManager.GetPlayerData().player.GetComponent<PlayerMovement>().tutorialDontShot = false;
                 break;
+                
+            case "HealSetting":
+
+                SetAttack("HealSetting");
+                break;
+
 
             case "EndDialogue":
                 // 문장이 끝나면 표정 Oh로 표정변경 0.3초뒤 "총알"이라는 대사를 "친절"로 변경 

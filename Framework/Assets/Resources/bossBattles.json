@@ -101,15 +101,20 @@
       "dialogues": [
         {
           "text": "* 하트 모양이 보이지?\n저게 네 영혼이야.\n네 존재의 정수지!",
-          "expression": "Talking"
-        },
-        {
-          "text": "* 이런 . . . 너 많이 다쳤구나? 내가 치료해줄게.",
-          "expression": "Talking"
-        },
-        {
-          "text": "* 자! 받아 내  \n\"친절 알갱이\"", 
+          "expression": "Talking",
           "eventType": "ChangeSoul"
+        },
+        {
+          "text": "* 이런 . . . 너 많이 다쳤구나?\n 내가 치료해줄게.",
+          "attack": "HealSetting",
+          "expression": "Talking"
+        },
+        {
+          "text": "* 자! 받아 내  \n\"친절 알갱이\"",
+          "expression": "Talking",
+          "eventType": "Special",
+          "attack": "ShotThePlayer"
+
         },
         {
           "text": "* 움직여!\n친절을 최대한\n많이 받는거야!", 

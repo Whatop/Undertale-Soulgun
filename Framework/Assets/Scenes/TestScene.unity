@@ -9597,7 +9597,7 @@ MonoBehaviour:
   m_margin: {x: 12.616089, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &47977479
@@ -9760,8 +9760,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 160, y: -4.7013}
-  m_SizeDelta: {x: 926.4972, y: 260.2867}
+  m_AnchoredPosition: {x: 157.73535, y: -4.7013}
+  m_SizeDelta: {x: 921.9678, y: 260.2867}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &53810431
 GameObject:
@@ -12497,8 +12497,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -241.17554, y: -498.83365}
-  m_SizeDelta: {x: 736.0027, y: 342.954}
+  m_AnchoredPosition: {x: -161.47717, y: -498.83365}
+  m_SizeDelta: {x: 895.3997, y: 342.954}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &162684846
 MonoBehaviour:
@@ -55736,6 +55736,7 @@ MonoBehaviour:
   trapShootInterval: 1
   laserPrefab: {fileID: 6174474790711311106, guid: 2ffba51eaeea2ca46809c7c4a8db7413, type: 3}
   iskeepLaser: 1
+  quickTextBar: {fileID: 0}
 --- !u!61 &1779042631
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -63806,6 +63807,7 @@ MonoBehaviour:
   trapShootInterval: 2
   laserPrefab: {fileID: 0}
   iskeepLaser: 0
+  quickTextBar: {fileID: 0}
 --- !u!1 &4962832956991049452
 GameObject:
   m_ObjectHideFlags: 0
@@ -63826,7 +63828,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4962832956991049453
 Transform:
   m_ObjectHideFlags: 0

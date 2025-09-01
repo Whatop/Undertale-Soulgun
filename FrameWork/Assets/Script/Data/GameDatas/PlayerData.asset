@@ -12,30 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 993e0c43f7083b948bd88df8a188ab9c, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  maxHealth: 6
+  player: {fileID: 0}
+  Maxhealth: 6
   health: 6
   position: {x: 0, y: 0, z: 0}
-  playerName: frisk
+  player_Name: frisk
   inventory: []
   currentState: 3
   isStop: 0
+  playerAnimator: {fileID: 0}
   isInvincible: 0
   isDie: 0
   isPhone: 0
-  level: 1
-  attack: 0
-  defense: 0
-  attackLevel: 0
-  defenseLevel: 0
-  exp: 10
-  nextExp: 0
-  gold: 0
-  currentWeapon:
+  LEVEL: 1
+  AT: 0
+  DF: 0
+  AT_level: 0
+  DF_level: 0
+  EXP: 10
+  NextEXP: 0
+  GOLD: 0
+  curWeapon:
     id: 0
     itemName: 
     description: 
     itemType: 0
-  currentArmor:
+  curArmor:
     id: 0
     itemName: 
     description: 
