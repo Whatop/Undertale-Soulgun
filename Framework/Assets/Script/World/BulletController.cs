@@ -81,7 +81,7 @@ public class BulletController : MonoBehaviour
         { BulletType.Barrier, Color.white },
         { BulletType.Directional, Color.white },
         { BulletType.Speed, Color.white },
-        { BulletType.FixedPoint, Color.cyan },
+        { BulletType.FixedPoint, Color.white },
         { BulletType.GasterBlaster, Color.white },
         { BulletType.Laser, Color.white },
         { BulletType.None, Color.white }
@@ -106,10 +106,15 @@ public class BulletController : MonoBehaviour
     {
         initialPosition = transform.position;
 
-        if (GetComponent<SpriteRenderer>() != null)
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
         {
-            GetComponent<SpriteRenderer>().color = bulletColors[bulletType];
+            if (isHeal)
+                sr.color = Color.green; // 힐탄은 무조건 초록
+            else if (bulletColors.TryGetValue(bulletType, out Color baseColor))
+                sr.color = baseColor;
         }
+
     }
     private void OnEnable()
     {
@@ -121,16 +126,20 @@ public class BulletController : MonoBehaviour
         hitTimer.Clear();
         keepLaser = false;
         didHitBarrierOnce = false;
+
         if (lineRenderer != null)
             lineRenderer.enabled = false;
-        if (bulletColors.TryGetValue(bulletType, out Color color))
+
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
         {
-            if (GetComponent<SpriteRenderer>() != null)
-            {
-                GetComponent<SpriteRenderer>().color = color;
-            }
+            if (isHeal)
+                sr.color = Color.green; // 힐탄은 무조건 초록
+            else if (bulletColors.TryGetValue(bulletType, out Color baseColor))
+                sr.color = baseColor;
         }
     }
+
     private void OnDisable()
     {
         if (lifeTimeRoutine != null)
@@ -187,10 +196,6 @@ public class BulletController : MonoBehaviour
         this.bulletType = type;
         this.isHeal = false;
 
-        // 색상 다시 설정
-        var renderer = GetComponent<SpriteRenderer>();
-        if (renderer != null)
-            renderer.color = bulletColors[bulletType];
 
         this.speed = bulletSpeed;
         this.damage = bulletDamage;
@@ -201,16 +206,17 @@ public class BulletController : MonoBehaviour
         this.isFreind = isfreind;
         this.isHeal = isheal;
         initialPosition = transform.position;
-       
-        // 총알 색상 재설정
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null && bulletColors.TryGetValue(bulletType, out Color baseColor))
-        {
-            sr.color = baseColor;
-            if (this.isHeal)
-                sr.color = Color.green;  // 회복 탄환은 항상 초록색
-        }
 
+        // 총알 색상 재설정
+        // 색상 다시 설정
+        var renderer = GetComponent<SpriteRenderer>();
+        if (renderer != null)
+        {
+         if(!isHeal)
+            renderer.color = bulletColors[bulletType];
+         else
+            renderer.color = Color.green;
+        }
         // ✅ 기존 코루틴 정리 후 새로 시작
         if (lifeTimeRoutine != null)
             StopCoroutine(lifeTimeRoutine);
@@ -365,9 +371,11 @@ public class BulletController : MonoBehaviour
         // 색상 변경
         if (GetComponent<SpriteRenderer>() != null)
         {
+            if(!this.isHeal)
             GetComponent<SpriteRenderer>().color = bulletColors[newType];
+            else
+            GetComponent<SpriteRenderer>().color = Color.green;
         }
-
         StartPattern(); // 새로운 패턴 실행
     }
 
@@ -572,68 +580,41 @@ public class BulletController : MonoBehaviour
     {
         if (other.CompareTag("Enemy") && isFreind)
         {
-            GameObject enemy = other.gameObject;
-
-            if (!hitTimer.ContainsKey(enemy))
+            var enemy = other.GetComponent<LivingObject>();
+            if (enemy != null)
             {
-                hitTimer[enemy] = Time.time;
-                enemy.GetComponent<EnemyController>().TakeDamage(damage);
-            }
-            else
-            {
-                if (Time.time - hitTimer[enemy] >= dotInterval)
-                {
-                    hitTimer[enemy] = Time.time;
-                    enemy.GetComponent<EnemyController>().TakeDamage(damage);
-                }
+                DamageInfo info = new DamageInfo(damage, this.gameObject, DamageType.Normal, false, isHeal);
+                enemy.TakeDamage(info);
+                DestroyBullet();
             }
         }
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        // **회복 탄환 처리**: 플레이어나 적에게 닿으면 체력 회복
-        if (isHeal)
-        {
-            if (other.CompareTag("Enemy") && isFreind)
-            {
-                LivingObject target = other.GetComponent<LivingObject>();
-                if (target != null)
-                {
-                    target.Heal(damage);  // 데미지 대신 해당 값만큼 체력 회복
-                    DestroyBullet();
-                }
-            }
-            else if (other.CompareTag("Soul") && !isFreind)
-            {
-                LivingObject target = GameManager.Instance.GetPlayerData().player.GetComponent<LivingObject>();
-                ObjectState state = GameManager.Instance.GetPlayerData().player.GetComponent<PlayerMovement>().objectState;
-                if (target != null && state != ObjectState.Roll)
-                    if (target != null)
-                {
-                    target.Heal(damage);  // 데미지 대신 해당 값만큼 체력 회복
-                    DestroyBullet();
-                }
-            }
-            return;  // 회복 탄환은 다른 충돌 로직 처리하지 않음
-        }
-
         // **일반 탄환 처리**: 아군 탄환 -> 적에게 데미지 / 적 탄환 -> 플레이어에게 데미지
         if (other.CompareTag("Enemy") && isFreind)
         {
-            LivingObject enemy = other.GetComponent<LivingObject>();
+            var enemy = other.GetComponent<LivingObject>();
             if (enemy != null)
-                enemy.TakeDamage(damage);
-            if (bulletType != BulletType.GasterBlaster && bulletType != BulletType.Barrier)
-                DestroyBullet();
+            {
+                DamageInfo info = new DamageInfo(damage, this.gameObject, DamageType.Normal, false, isHeal);
+                enemy.TakeDamage(info);
+                if (bulletType != BulletType.GasterBlaster && bulletType != BulletType.Barrier)
+                    DestroyBullet();
+            }
         }
         else if (other.CompareTag("Soul") && !isFreind)
         {
             LivingObject player = GameManager.Instance.GetPlayerData().player.GetComponent<LivingObject>();
             ObjectState state = GameManager.Instance.GetPlayerData().player.GetComponent<PlayerMovement>().objectState;
             if (player != null && state != ObjectState.Roll)
-                player.TakeDamage(damage);
-            if (bulletType != BulletType.GasterBlaster && bulletType != BulletType.Barrier)
-                DestroyBullet();
+            {
+                DamageInfo info = new DamageInfo(damage, this.gameObject, DamageType.Normal, false, isHeal);
+                player.TakeDamage(info);
+
+                if (bulletType != BulletType.GasterBlaster && bulletType != BulletType.Barrier)
+                    DestroyBullet();
+            }
         }
 
         // **방어막 탄환 처리**: 적 탄환을 막고 반사
@@ -791,7 +772,8 @@ public class BulletController : MonoBehaviour
             if (living != null)
             {
                 // damage를 “초당 데미지”로 가정할 경우
-                living.TakeDamage(damage);
+                DamageInfo info = new DamageInfo(damage, this.gameObject, DamageType.Normal, false, isHeal);
+                living.TakeDamage(info);
                 // 만약 1회당 고정 데미지면 `damage`만 넘겨도 됩니다.
             }
         }

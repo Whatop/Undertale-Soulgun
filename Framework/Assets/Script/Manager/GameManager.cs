@@ -17,6 +17,26 @@ public enum ItemType
     Armor,
     None
 }
+public enum DamageType { Normal, Heal, Fire, Ice, TrueDamage }
+
+public struct DamageInfo
+{
+    public float amount;        // 데미지 or 회복량
+    public GameObject attacker; // 누가 공격했는지
+    public DamageType type;     // 데미지 속성
+    public bool isCritical;     // 치명타 여부
+    public bool isHeal;         // 회복 여부
+
+    public DamageInfo(float amount, GameObject attacker, DamageType type = DamageType.Normal, bool isCritical = false, bool isHeal = false)
+    {
+        this.amount = amount;
+        this.attacker = attacker;
+        this.type = type;
+        this.isCritical = isCritical;
+        this.isHeal = isHeal;
+    }
+}
+
 [System.Serializable]
 public class PlayerData
 {
@@ -268,14 +288,14 @@ public class GameManager : MonoBehaviour
    
         RectTransform gameoverSoulRect = gameoverSoul.GetComponent<RectTransform>();
         Vector2 screenPosition = Camera.main.WorldToScreenPoint(GetPlayerData().position);
-        if (!isBattle)
-        {
-            UIManager.Instance.OffPlayerUI();
-        }
-        else
-        {
-           UIManager.Instance.OnPlayerUI();
-        }
+       // if (!isBattle)
+       // {
+       //     UIManager.Instance.OffPlayerUI();
+       // }
+       // else
+       // {
+       //    UIManager.Instance.OnPlayerUI();
+       // }
         // Canvas가 Screen Space - Overlay 모드인지 확인
         if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
         {

@@ -203,6 +203,7 @@ public class BattleManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             SetAttack("Homing", 0, 1f);//유도
+            SetAttack("GasterBlaster", 0);//유도
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
@@ -888,12 +889,14 @@ public class BattleManager : MonoBehaviour
                 SetBossExpression("Appear");
                 //ingame sink 키고, ui 키기
                 StartCoroutine(FloweyAnimationThenNextDialogue(dialogue, 1.5f));
-
+        
                 break;
 
             case "tutorialShot":
 
                 //@@@수정할거
+
+                gameManager.isBattle = true;
                 gameManager.GetPlayerData().player.GetComponent<PlayerMovement>().tutorialDontShot = false;
                 break;
                 

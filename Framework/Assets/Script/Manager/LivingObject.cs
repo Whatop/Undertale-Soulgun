@@ -50,9 +50,9 @@ public class LivingObject : MonoBehaviour
         GameObject cameraObject = GameObject.FindGameObjectWithTag("MainCamera");
         mainCamera = cameraObject.GetComponent<Camera>(); 
         // 자식 중에 "Soul" 이름을 가진 오브젝트에서 SpriteRenderer를 가져옴
-        Transform soulTf = transform.Find("Soul");
-        if (soulTf != null)
-            spriteRenderer = soulTf.GetComponent<SpriteRenderer>();
+        GameObject soulObj = GameObject.FindGameObjectWithTag("Soul");
+        if (soulObj != null)
+            spriteRenderer = soulObj.GetComponent<SpriteRenderer>();
         else
             Debug.LogWarning("자식에 'Soul' 오브젝트가 없습니다!");
         // 체력바 초기화
@@ -145,13 +145,19 @@ public class LivingObject : MonoBehaviour
         healthBar.SetActive(false);
     }
 
-    public virtual void TakeDamage(float damageAmount)
+    public virtual void TakeDamage(DamageInfo info)
     {
         if (!isInvincible) // 무적 상태가 아닐 때만 데미지를 받음
         {
-            UIManager.Instance.ShowDamageText(transform.position, damageAmount);
-            health -= damageAmount;
-            SoundManager.Instance.SFXPlay("hit", 127);
+            if (info.isHeal)
+            {
+                Heal(info.amount);
+                return;
+            }
+            UIManager.Instance.ShowDamageText(transform.position, info.amount);
+            SoundManager.Instance.SFXPlay("hit", 128);
+            health -= info.amount;
+            Debug.Log($"{gameObject.name}이(가) {info.amount} 피해를 받음. 공격자: {info.attacker?.name}");
 
             if (healthSlider != null)
             {

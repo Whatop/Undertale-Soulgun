@@ -176,7 +176,7 @@ public class LaserFadeOut : MonoBehaviour
     {
         if (!hitTimer.ContainsKey(soulObj) || Time.time - hitTimer[soulObj] >= dotInterval)
         {
-            var playerMove = soulObj.GetComponent<PlayerMovement>();
+            var playerMove = GameManager.Instance.GetPlayerData().player.GetComponent<PlayerMovement>();
             if (playerMove == null)
                 return;
 
@@ -187,10 +187,13 @@ public class LaserFadeOut : MonoBehaviour
             hitTimer[soulObj] = Time.time;
             if (soulObj.CompareTag("Soul"))
             {
-                LivingObject player = soulObj.GetComponent<LivingObject>();
+                LivingObject player = GameManager.Instance.GetPlayerData().player.GetComponent<LivingObject>();
                 ObjectState state = GameManager.Instance.GetPlayerData().player.GetComponent<PlayerMovement>().objectState;
-                if (player != null && state != ObjectState.Roll)
-                    player.TakeDamage(1);
+                if (player != null )
+                {
+                    DamageInfo info = new DamageInfo(1, this.gameObject, DamageType.Normal, false, false);
+                    player.TakeDamage(info);
+                }
             }
         }
     }
