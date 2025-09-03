@@ -70,6 +70,7 @@ public class BattleManager : MonoBehaviour
     public GameObject Boss_Textbar;
     public TextMeshProUGUI Boss_Text;
     public GameObject battlePoint;
+    public Transform bossPoint;
     public int test_curboss = 0;
     [SerializeField]
     private List<GameObject> activeBullets = new List<GameObject>(); // 현재 활성화된 총알 목록
@@ -697,7 +698,7 @@ public class BattleManager : MonoBehaviour
             case "HealSetting":
                 for (int i = 0; i < bulletPoints.Length; i++)
                 {
-                    SpawnBulletAtPosition(BulletType.FixedPoint, bulletPoints[i].position, Quaternion.identity, Vector2.right, "Flowey_Normal", 0, 0, false, 15, 5, 1, 5, true);
+                    SpawnBulletAtPosition(BulletType.FixedPoint, bossPoint.position, Quaternion.identity, Vector2.right, "Flowey_Normal", 0, 0, false, 15, 5, 1, 5, true, bulletPoints[i]);
                 }
                 break;
 
@@ -851,7 +852,8 @@ public class BattleManager : MonoBehaviour
     float bulletspeed = 5f,
     float bulletaccuracy = 1f,
     float bulletdamge = 1f,
-       bool isheal = false
+       bool isheal = false,
+       Transform target = null
 )
     {
         if (prefab == "None") return null;
@@ -866,7 +868,7 @@ public class BattleManager : MonoBehaviour
         BulletController bc = bullet.GetComponent<BulletController>();
         if (bc != null)
         {
-            bc.InitializeBullet(dir, bulletspeed, bulletaccuracy, bulletdamge, maxrange, delay, type, null, size, isfriends, isheal);
+            bc.InitializeBullet(dir, bulletspeed, bulletaccuracy, bulletdamge, maxrange, delay, type, target, size, isfriends, isheal);
             activeBullets.Add(bullet);
         }
         return bullet;
@@ -902,7 +904,7 @@ public class BattleManager : MonoBehaviour
                 
             case "HealSetting":
 
-                SetAttack("HealSetting");
+                ExecuteAttack("HealSetting");
                 break;
 
 
