@@ -58,7 +58,10 @@ public class LivingObject : MonoBehaviour
         // 체력바 초기화
         InitializeHealthBar();
     }
-
+    public float GetHp()
+    {
+        return health;
+    }
     protected void InitializeHealthBar()
     {
         if (healthBarPrefab != null && worldCanvas != null)

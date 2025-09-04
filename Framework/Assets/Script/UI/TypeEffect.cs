@@ -51,13 +51,14 @@ public class TypeEffect : MonoBehaviour
         }
         StartEffect();
     }
-    public void SetMsg(string msg, System.Action onEffectEnd, int eventNumber, string expression = null)
+    public void SetMsg(string msg, System.Action onEffectEnd, float textspeed, int eventNumber, string expression = null)
     {
         targetMsg = msg;
         onEffectEndCallback = onEffectEnd;
         currentExpression = expression; // 현재 표정 정보를 저장
+        CharPerSeconds = textspeed;
 
-       
+
         switch (eventNumber)
         {
             case 0:

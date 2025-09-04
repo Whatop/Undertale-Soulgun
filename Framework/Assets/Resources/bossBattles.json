@@ -100,45 +100,39 @@
       "name": "플라위(튜토리얼)",
       "dialogues": [
         {
-          "text": "* 하트 모양이 보이지?\n저게 네 영혼이야.\n네 존재의 정수지!",
+          "text": "* 하트 모양이 보이지?\n<indent=6%>저게 네 영혼이야.\n<indent=6%>네 존재의 정수지!",
           "expression": "Talking",
           "eventType": "ChangeSoul"
         },
         {
-          "text": "* 이런 . . . 너 많이 다쳤구나?\n 내가 치료해줄게.",
+          "text": "* 이런 . . . 너 많이 다쳤구나?\n<indent=6%>내가 치료해줄게.",
           "attack": "HealSetting",
           "expression": "Talking"
         },
         {
-          "text": "* 자! 받아 내  \n\"친절 알갱이\"",
-          "expression": "Talking",
-          "eventType": "Special",
-          "attack": "ShotThePlayer"
-
-        },
-        {
-          "text": "* 움직여!\n친절을 최대한\n많이 받는거야!", 
+          "text": "* 움직여!\n<indent=6%>친절을 최대한\n<indent=6%>많이 받는거야!",
           "expression": "Default",
-          "eventType": "Special",
-          "attack": "Attack2"
+          "attack": "ShotThePlayer",
+          "textSpeed": 2222,
+          "eventType": "dont_next"
         },
         {
-          "text": "* 이봐 친구,\n놓쳐버렸잖아.",
+          "text": "* 이봐 친구,\n<indent=6%>놓쳐버렸잖아.",
           "expression": "Sneer",
           "music": "LowerTone",
           "attack": "Attack3"
         },
         {
-          "text": "* 다시 해 보자고,\n알았지?",
+          "text": "* 다시 해 보자고,\n<indent=6%>알았지?",
           "expression": "Default",
           "attack": "Attack4"
         },
         {
-          "text": "* 좋아.. 내가 너를 나갈수있게 해줄게\n 대신에 내가 너의 여정에 함께해도 될까?",
+          "text": "* 좋아.. 내가 너를 나갈수있게\n<indent=6%> 해줄게 대신에 내가 너의 \n<indent=6%>여정에 함께해도 될까?",
           "expression": "Talking"
         },
         {
-          "text": "피했어 . . ? 어떻게 . .",
+          "text": "피했어 . . ?\n<indent=6%>어떻게 . .",
           "expression": "Talking"
         },
         {
@@ -152,7 +146,7 @@
           "eventType": "Special"
         },
         {
-          "text": "필요할때 이걸로 나를 불러줘! \n 그럼 이따봐",
+          "text": "필요할때 이걸로 나를 불러줘!\n<indent=6%>그럼 이따봐",
           "expression": "Talking",
           "eventType": "Special"
         }

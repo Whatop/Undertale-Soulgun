@@ -265,7 +265,7 @@ public class UIManager : MonoBehaviour
     private int nextBarIndex = 0;
     private bool isQuickItemDelay = false;
     private bool isQuickEmotionDelay = false;
-
+    public string preEmotion = null;
     public void ShowQuickText(string msg, string itemName = "아이템", int txtId = 0, float charPerSec = 10f)
     {
         if (isQuickItemDelay)
@@ -1138,6 +1138,7 @@ public class UIManager : MonoBehaviour
             Debug.Log($"[{currentRadialMenu}] Segment {index} 선택됨 - {seg.segmentName}");
             if(seg.segmentName != "")
                 seg.ExecuteAction(index);
+            preEmotion = seg.segmentName;
         }
 
         ToggleRadialMenu(currentRadialMenu); // 닫기

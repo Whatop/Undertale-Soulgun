@@ -377,7 +377,7 @@ public class DialogueManager : MonoBehaviour
         SentenceData sentenceData = sentences.Dequeue();
 
         // 텍스트 출력
-        typeEffect.SetMsg(sentenceData.text, OnSentenceComplete, eventNumber, sentenceData.expression);
+        typeEffect.SetMsg(sentenceData.text, OnSentenceComplete, 10, eventNumber, sentenceData.expression);
     }
 
     private void OnSentenceComplete()

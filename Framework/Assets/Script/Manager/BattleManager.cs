@@ -13,6 +13,7 @@ public class BossDialogue
     public string eventType; // 특수 이벤트
     public string music; // 음악 설정
     public int skipToDialogue; // 특정 대사로 이동
+    public int textSpeed; // ← 추가: 이 줄만의 텍스트 속도(옵션)
 }
 
 [System.Serializable]
@@ -95,6 +96,15 @@ public class BattleManager : MonoBehaviour
     public Transform spawnParent;   // 생성된 오브젝트를 담을 부모 오브젝트 (정리용)
 
     private bool _floweyHealHit = false; // 힐탄을 맞았는가?
+    private bool canSkipOrNext = true;   // Z/Space로 스킵/다음 가능 여부
+    private float autoNextDelay = 0f;    // next_talk 지연시간
+    private Coroutine pendingAutoNext;   // 지연 코루틴 핸들
+    private bool awaitingDodgeWindow = false;
+    private float hpSnapshot = 0f;
+    private bool nextTalkArmed = false;     // 이번 대사 끝나면 자동 진행할지
+    private float nextTalkDelay = 0f;       // 자동 진행 지연 시간
+    private int defaultTextSpeed = 10; // 기본 텍스트 속도(현재 코드의 100 유지)  :contentReference[oaicite:2]{index=2}
+
     public IEnumerator FloweyTutorialSequence()
     {
         // 1) 소울 주입(연출+UI 전환)
@@ -113,13 +123,66 @@ public class BattleManager : MonoBehaviour
         if (_floweyHealHit)
         {
             // 힐에 맞은 분기
-            currentTypeEffect.SetMsg("...그걸 일부러 맞다니? 재밌네.", OnSentenceComplete, 60, "Smile");
+            currentTypeEffect.SetMsg("...그걸 일부러 맞다니? 재밌네.", OnSentenceComplete,10, 100, "Smile");
         }
         else
         {
             // 힐을 피한 분기
-            currentTypeEffect.SetMsg("치료도 피하다니? 네가 뭘 원하는지 알겠어.", OnSentenceComplete, 60, "Sneer");
+            currentTypeEffect.SetMsg("치료도 피하다니? 네가 뭘 원하는지 알겠어.", OnSentenceComplete,10, 100, "Sneer");
         }
+    }
+    private IEnumerator StartDodgeWindow(float windowSec, int gotoDialogueIndexOnHit)
+    {
+        awaitingDodgeWindow = true;
+        hpSnapshot = player.GetHp();
+        float endTime = Time.time + windowSec;
+
+        // 체크 구간 동안 dont_next로 묶어두고, 공격 패턴만 흘림
+        canSkipOrNext = false;
+
+        while (Time.time < endTime)
+            yield return null;
+
+        awaitingDodgeWindow = false;
+
+        // 피격 판정: 체력이 줄었으면 피격
+        if (player.GetComponent<LivingObject>().GetHp() < hpSnapshot)
+        {
+            JumpToDialogue(gotoDialogueIndexOnHit);
+        }
+        else
+        {
+            // 생존/회피 성공 → 다음 시나리오
+            canSkipOrNext = true;
+            DisplayNextDialogue();
+        }
+    }
+    // 공통으로 쓸 헬퍼
+    private int ResolveSpeed(BossDialogue d)
+    {
+        return (d != null && d.textSpeed > 0) ? d.textSpeed : defaultTextSpeed;
+    }
+    private void JumpToDialogue(int index1based)
+    {
+        // 현재 보스의 전체 대사 리스트에서 index1based부터 큐를 재구성
+        boss_sentences.Clear();
+        currentDialogueIndex = Mathf.Clamp(index1based - 1, 0, currentBoss.dialogues.Count - 1);
+        for (int i = currentDialogueIndex; i < currentBoss.dialogues.Count; i++)
+        {
+            var d = currentBoss.dialogues[i];
+            boss_sentences.Enqueue(new BossDialogue
+            {
+                text = d.text,
+                expression = d.expression,
+                attack = d.attack,
+                direction = d.direction,
+                eventType = d.eventType,
+                music = d.music,
+                skipToDialogue = d.skipToDialogue,
+            });
+        }
+        canSkipOrNext = true;
+        DisplayNextDialogue();
     }
     public void ReportHealHit()
     {
@@ -514,6 +577,9 @@ public class BattleManager : MonoBehaviour
             // 대화 중에는 상호작용 제한
             UIManager.Instance.isInventroy = false;
 
+            if (!canSkipOrNext)
+                return;
+
             // 타이핑 효과 중인 경우
             if (IsEffecting())
             {
@@ -580,8 +646,9 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            currentTypeEffect.SetMsg(dialogue.text, OnSentenceComplete, 100, dialogue.expression);
-
+            int spd = ResolveSpeed(dialogue);
+            defaultTextSpeed = spd;
+            currentTypeEffect.SetMsg(dialogue.text, OnSentenceComplete, defaultTextSpeed, 100, dialogue.expression);
             // 표정 설정
             SetBossExpression(dialogue.expression);
         }
@@ -623,13 +690,53 @@ public class BattleManager : MonoBehaviour
         Debug.LogWarning($"No boss battle found for Boss ID: {bossID}");
         return null;
     }
+
+    // 자동 다음으로 넘어가기
+    private IEnumerator AutoNextAfter(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        canSkipOrNext = true;
+        DisplayNextDialogue();
+    }
+
+    public void ContinueDialogue()  // 외부 이벤트가 호출
+    {
+        if (!isTalking) return;
+        if (pendingAutoNext != null) { StopCoroutine(pendingAutoNext); pendingAutoNext = null; }
+        canSkipOrNext = true;
+        DisplayNextDialogue();
+    }
+    // 유틸: "next_talk:1.5" 형태 파싱
+    private float ParseDelay(string raw, float fallback)
+    {
+        int i = raw.IndexOf(':');
+        if (i < 0) return fallback;
+        if (float.TryParse(raw.Substring(i + 1), out float t))
+            return Mathf.Max(0f, t);
+        return fallback;
+    }
+
     private void OnSentenceComplete()
     {
         SetBossExpression("Default");
         Debug.Log("보스 문장이 완료되었습니다.");
         SetBossExpression("Restare");
+        if (nextTalkArmed)
+            StartCoroutine(NextTalkAfterDelay());
     }
+    private IEnumerator NextTalkAfterDelay()
+    {
+        // 혹시 모를 잔여 프레임 보호
+        yield return null;
 
+        // 대사 끝난 시점 보장 + 지연
+        if (nextTalkDelay > 0f)
+            yield return new WaitForSeconds(nextTalkDelay);
+
+        nextTalkArmed = false;
+        canSkipOrNext = true; // 필요시 해제
+        DisplayNextDialogue();
+    }
     public void EndDialogue()
     {
         isTalking = false;
@@ -907,23 +1014,56 @@ public class BattleManager : MonoBehaviour
                 ExecuteAttack("HealSetting");
                 break;
 
+            // BattleManager.HandleSpecialEvent(...)
+            case "next_talk":
+                    // 1) 이 줄 텍스트를 먼저 찍는다 (타이핑 완료 콜백 필요)
+                    currentTypeEffect.SetMsg(dialogue, OnSentenceComplete,defaultTextSpeed, currentBoss.bossID);
 
-            case "EndDialogue":
-                // 문장이 끝나면 표정 Oh로 표정변경 0.3초뒤 "총알"이라는 대사를 "친절"로 변경 
-                Debug.Log("Ending dialogue.");
+                    // 2) 완료 후 자동 진행을 '무장'한다
+                    nextTalkArmed = true;
+                    nextTalkDelay = 1.0f;   // 나중에 파싱 붙이면 변경
+                    canSkipOrNext = false;  // 입력 잠금 (선택)
+                    break;
 
-                break;
+            case "dont_next":
+                    // 1) 이 줄 텍스트를 찍는다
+                    currentTypeEffect.SetMsg(dialogue, OnSentenceComplete,defaultTextSpeed, currentBoss.bossID);
 
+                    // 2) 반드시 이벤트로만 풀리도록 잠금
+                    canSkipOrNext = false;
+                    break;
+
+            case "WaitEmotion":
+                    canSkipOrNext = false;  // 키 입력으로만 진행
+                    UIManager.Instance.ShowQuickText("* [E] 감정표현을 해보자!");
+                    StartCoroutine(WaitEmotionKeyThenContinue());
+                    break;
+            case "ReceiveEmotion":
+                  string picked = UIManager.Instance.preEmotion; // 구현되어있다면 사용
+                  if (picked == "Accept" || picked == "Help")
+                      JumpToDialogue(11);
+                  else
+                      JumpToDialogue(9); // 반복
+                    break;
+            case "SummonExtractor":
+                    // 허수아비 소환
+                    // 1) 소환
+                    //var extractor = Instantiate(extractorPrefab, player.transform.position + Vector3.right * 1.5f, Quaternion.identity);
+                    //// 2) E 키 상호작용 대기
+                    //canSkipOrNext = false;
+                    //UIManager.Instance.quickTextBar.ShowMessage("* [E] 영혼 추출기를 사용해봐!", 2f);
+                    //StartCoroutine(WaitInteractAndApplySoul(extractor));
+                    break;
+            case "UnlockCallFlowey":
+                    // 플라위 연략이 추가됨!
+                    //GameManager.Instance.flags["CanCallFlowey"] = true;
+                    //UIManager.Instance.quickTextBar.ShowMessage("* 언제든 [C]로 나를 불러!", 2f);
+                    //ContinueDialogue();
+                    break;
             case "LowerTone":
                 // 음악을 낮은 톤으로 변경
                 Debug.Log("Changing music to lower tone.");
                 SoundManager.Instance.PlayMusic("LowerTone");  // 음악을 변경하는 예시
-                break;
-
-            case "AttackWithBullet":
-                // 대사 후 총알로 공격하는 이벤트 처리
-                Debug.Log("Attacking with bullet after dialogue.");
-                ExecuteAttack("Attack1");  // 예시로 Attack1을 실행
                 break;
 
             case "CreepFace":
@@ -941,13 +1081,22 @@ public class BattleManager : MonoBehaviour
                 break;
         }
     }
+    private IEnumerator WaitEmotionKeyThenContinue()
+    {
+        // QuickTextBar가 닫힌 뒤에도 계속 대기
+        while (!Input.GetKeyDown(KeyCode.E))
+            yield return null;
+
+        // 여기서 실제 감정 선택 UI 열어도 됨 (지금은 키 입력만 체크)
+        ContinueDialogue();
+    }
     // 플라위 애니메이션이 끝난 후 다음 대사를 진행하는 코루틴
     private IEnumerator FloweyAnimationThenNextDialogue(string dialogue, float waitTime)
     {
         // waitTime 동안 대기(애니메이션이 끝날 때까지 혹은 넉넉히 잡아둔 시간)
         yield return new WaitForSeconds(waitTime);
         SetBossExpression("Talking");
-        currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, 100);
+        currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, 100);
     }
     private IEnumerator HandleFinalRevelation()
     {

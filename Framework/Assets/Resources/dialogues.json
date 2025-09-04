@@ -37,11 +37,11 @@
           "expression": "Talking"
         },
         {
-          "text": "* 너 이 지하세계는\n  처음인가 보구나,\n  그렇지?",
+          "text": "* 너 이 지하세계는\n<indent=6%>처음인가 보구나,\n<indent=6%>그렇지?",
           "expression": "Talking"
         },
         {
-          "text": "* 이런, 정말\n  정신없겠네.",
+          "text": "* 이런, 정말\n<indent=6%>정신없겠네.",
           "expression": "Talking"
         },
         {
@@ -53,7 +53,7 @@
           "expression": "Talking"
         },
         {
-          "text": "* 준비됐니?\n* 간다!",
+          "text": "* 준비됐니?\n<indent=6%>간다!",
           "expression": "Talking"
         }
       ]
