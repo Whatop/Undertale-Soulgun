@@ -88,6 +88,7 @@ public class BattleManager : MonoBehaviour
 
     private Vector2 prevPos;
 
+    [SerializeField]
     private BossBattleData currentBoss;
     private int currentDialogueIndex = 0;
 
@@ -179,6 +180,7 @@ public class BattleManager : MonoBehaviour
                 eventType = d.eventType,
                 music = d.music,
                 skipToDialogue = d.skipToDialogue,
+                textSpeed = d.textSpeed
             });
         }
         canSkipOrNext = true;
@@ -624,6 +626,7 @@ public class BattleManager : MonoBehaviour
                 eventType = dialogue.eventType,
                 music = dialogue.music,
                 skipToDialogue = dialogue.skipToDialogue,
+                textSpeed = dialogue.textSpeed 
             });
         }
 
@@ -642,13 +645,16 @@ public class BattleManager : MonoBehaviour
         // 특수 이벤트 처리
         if (!string.IsNullOrEmpty(dialogue.eventType))
         {
+            int spd = ResolveSpeed(dialogue);
+            defaultTextSpeed = spd;
+
             HandleSpecialEvent(dialogue.eventType, dialogue.text);
         }
         else
         {
             int spd = ResolveSpeed(dialogue);
             defaultTextSpeed = spd;
-            currentTypeEffect.SetMsg(dialogue.text, OnSentenceComplete, defaultTextSpeed, 100, dialogue.expression);
+            currentTypeEffect.SetMsg(dialogue.text, OnSentenceComplete, defaultTextSpeed, currentBoss.bossID, dialogue.expression);
             // 표정 설정
             SetBossExpression(dialogue.expression);
         }
@@ -1017,7 +1023,7 @@ public class BattleManager : MonoBehaviour
             // BattleManager.HandleSpecialEvent(...)
             case "next_talk":
                     // 1) 이 줄 텍스트를 먼저 찍는다 (타이핑 완료 콜백 필요)
-                    currentTypeEffect.SetMsg(dialogue, OnSentenceComplete,defaultTextSpeed, currentBoss.bossID);
+                    currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, currentBoss.bossID);
 
                     // 2) 완료 후 자동 진행을 '무장'한다
                     nextTalkArmed = true;

@@ -102,24 +102,27 @@
         {
           "text": "* 하트 모양이 보이지?\n<indent=6%>저게 네 영혼이야.\n<indent=6%>네 존재의 정수지!",
           "expression": "Talking",
+          "textSpeed": 12,
           "eventType": "ChangeSoul"
         },
         {
           "text": "* 이런 . . . 너 많이 다쳤구나?\n<indent=6%>내가 치료해줄게.",
           "attack": "HealSetting",
+          "textSpeed": 12,
           "expression": "Talking"
         },
         {
           "text": "* 움직여!\n<indent=6%>친절을 최대한\n<indent=6%>많이 받는거야!",
           "expression": "Default",
           "attack": "ShotThePlayer",
-          "textSpeed": 2222,
+          "textSpeed": 20,
           "eventType": "dont_next"
         },
         {
           "text": "* 이봐 친구,\n<indent=6%>놓쳐버렸잖아.",
           "expression": "Sneer",
           "music": "LowerTone",
+          "textSpeed": 12,
           "attack": "Attack3"
         },
         {

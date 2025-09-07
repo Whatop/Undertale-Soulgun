@@ -5,7 +5,7 @@ using TMPro;
 
 public class TypeEffect : MonoBehaviour
 {
-    public float CharPerSeconds = 10f; // 초당 문자 수
+    public float CharPerSeconds = 10; // 초당 문자 수
     private string targetMsg;
     public TextMeshProUGUI msgText;
     private int index;
@@ -29,28 +29,6 @@ public class TypeEffect : MonoBehaviour
         StartEffect();
     }
 
-    public void SetMsg(string msg, System.Action onEffectEnd, int eventNumber)
-    {
-        targetMsg = msg;
-        onEffectEndCallback = onEffectEnd;
-
-        switch (eventNumber)
-        {
-            case 0:
-                txtsound = "SND_sASR";
-                txtId = 3;
-                break;
-            case 100:
-                txtsound = "voice_flowey_1";
-                txtId = 17;
-                break;
-            default:
-                txtsound = "SND_TXT1";
-                txtId = 0;
-                break;
-        }
-        StartEffect();
-    }
     public void SetMsg(string msg, System.Action onEffectEnd, float textspeed, int eventNumber, string expression = null)
     {
         targetMsg = msg;
@@ -66,6 +44,10 @@ public class TypeEffect : MonoBehaviour
                 txtId = 3;
                 break;
             case 100:
+                txtsound = "voice_flowey_1";
+                txtId = 17;
+                break;
+            case 2:
                 txtsound = "voice_flowey_1";
                 txtId = 17;
                 break;

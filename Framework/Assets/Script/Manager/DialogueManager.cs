@@ -353,7 +353,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         SentenceData sentence = gameover_sentences.Dequeue();
-        gameOvertypeEffect.SetMsg(sentence.text, OnGameOverComplete, 0);
+        gameOvertypeEffect.SetMsg(sentence.text, OnGameOverComplete, 10,0);
     }
 
 

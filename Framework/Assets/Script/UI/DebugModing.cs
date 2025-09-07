@@ -13,6 +13,7 @@ public class DebugModing : MonoBehaviour
     public TextMeshProUGUI debug_text;
 
     public GameObject[] hideObjects;
+    public NPC testNpc;
 
     private void Start()
     {
@@ -41,6 +42,8 @@ public class DebugModing : MonoBehaviour
             debugMode = 5;
         else if (Input.GetKeyDown(KeyCode.F6))
             debugMode = 6;
+        else if (Input.GetKeyDown(KeyCode.P))
+            debugMode = 7;
 
         HandleDebugMode();
     }
@@ -93,6 +96,11 @@ public class DebugModing : MonoBehaviour
                 SoundManager.Instance.BGSoundPlay(2, 0.6f);
                 // 추후 확장 가능
                 BattleManager.Instance.BattleStart(1);
+                debugMode = 0;
+                break;
+            case 7:
+                DialogueManager.Instance.SetCurrentNPC(testNpc);
+                EventManager.Instance.TriggerEvent(testNpc.npcID);
                 debugMode = 0;
                 break;
             default:

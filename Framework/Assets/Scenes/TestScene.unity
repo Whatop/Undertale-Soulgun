@@ -17515,6 +17515,7 @@ MonoBehaviour:
   - {fileID: 1043695547}
   - {fileID: 579769109}
   - {fileID: 1838382906}
+  preEmotion: 
 --- !u!4 &390055943
 Transform:
   m_ObjectHideFlags: 0
@@ -56067,6 +56068,7 @@ MonoBehaviour:
   - {fileID: 226037515}
   - {fileID: 135183976}
   - {fileID: 1956554083}
+  testNpc: {fileID: 1116188404}
 --- !u!114 &1785438557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56113,6 +56115,10 @@ MonoBehaviour:
   curEnemies:
   - {fileID: 4962832956991049452}
   bulletSpawnTransforms: []
+  currentBoss:
+    bossID: 0
+    name: 
+    dialogues: []
   bulletPointPrefab: {fileID: 2475700955202721965, guid: c1dcf219eaed4734bae2d9c21506b5a2, type: 3}
   bulletspawnPoint:
   - {fileID: 1096113459}
