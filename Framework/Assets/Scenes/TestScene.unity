@@ -25871,6 +25871,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 87b24f75a126b3043bf52f476ffd5448, type: 3}
   - {fileID: 8300000, guid: 495b0a053b3eadc4aa59e30ee625d385, type: 3}
   - {fileID: 8300000, guid: fcdf5a1d0cc7eba41bc7a4e5f2b826e1, type: 3}
+  - {fileID: 8300000, guid: 582db8bc137db5b4abf391e37f50d772, type: 3}
   initialPoolSize: 10
   sfxList: []
 --- !u!1 &767847419

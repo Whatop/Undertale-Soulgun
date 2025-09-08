@@ -51,6 +51,10 @@ public class TypeEffect : MonoBehaviour
                 txtsound = "voice_flowey_1";
                 txtId = 17;
                 break;
+            case 3:
+                txtsound = "voice_flowey_2";
+                txtId = 18;
+                break;
             default:
                 txtsound = "SND_TXT1";
                 txtId = 0;

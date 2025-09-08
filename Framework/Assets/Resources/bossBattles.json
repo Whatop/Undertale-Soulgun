@@ -100,7 +100,7 @@
       "name": "플라위(튜토리얼)",
       "dialogues": [
         {
-          "text": "* 하트 모양이 보이지?\n<indent=6%>저게 네 영혼이야.\n<indent=6%>네 존재의 정수지!",
+          "text": "* 하트 모양이 보이지?\n<indent=6%>저게 네 <color=#FFFF00>영혼</color>이야.\n<indent=6%>네 존재의 정수지!",
           "expression": "Talking",
           "textSpeed": 12,
           "eventType": "ChangeSoul"
@@ -112,7 +112,7 @@
           "expression": "Talking"
         },
         {
-          "text": "* 움직여!\n<indent=6%>친절을 최대한\n<indent=6%>많이 받는거야!",
+          "text": "* 움직여!\n<indent=6%><color=#00FF00>친절</color>을 최대한\n<indent=6%>많이 받는거야!",
           "expression": "Default",
           "attack": "ShotThePlayer",
           "textSpeed": 20,
@@ -131,11 +131,11 @@
           "attack": "Attack4"
         },
         {
-          "text": "* 좋아.. 내가 너를 나갈수있게\n<indent=6%> 해줄게 대신에 내가 너의 \n<indent=6%>여정에 함께해도 될까?",
+          "text": "* 좋아.. 이제 너를 나갈수있게 도와줄게\n 대신 너의 여정에 함께해도될까?",
           "expression": "Talking"
         },
         {
-          "text": "피했어 . . ?\n<indent=6%>어떻게 . .",
+          "text": "피했어..? \n<indent=6%>재밌네 이것도 피해보시지.",
           "expression": "Talking"
         },
         {

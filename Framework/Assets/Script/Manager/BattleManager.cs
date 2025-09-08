@@ -147,7 +147,7 @@ public class BattleManager : MonoBehaviour
         awaitingDodgeWindow = false;
 
         // 피격 판정: 체력이 줄었으면 피격
-        if (player.GetComponent<LivingObject>().GetHp() < hpSnapshot)
+        if (player.GetComponent<LivingObject>().GetHp() > hpSnapshot)
         {
             JumpToDialogue(gotoDialogueIndexOnHit);
         }
@@ -817,6 +817,8 @@ public class BattleManager : MonoBehaviour
 
             case "ShotThePlayer":
                 ChangeAllBulletTypes(BulletType.Normal);
+                StartCoroutine(StartDodgeWindow(windowSec: 2.5f,
+                                     gotoDialogueIndexOnHit: 3));
                 //  MoveBulletsToPlayer(true);  // accelerate = true
                 break;
 
