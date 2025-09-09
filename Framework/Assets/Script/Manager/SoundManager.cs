@@ -116,7 +116,33 @@ public class SoundManager : MonoBehaviour
         audioSource.Play();
         StartCoroutine(DeactivateAfterPlay(audioSource));
     }
+    public void SFXPlayDelayed(string sfxName, int sfxNum, float delaySeconds, float volume = 1f, bool unscaled = false)
+    {
+        StartCoroutine(PlaySFXAfterDelay(sfxNum, delaySeconds, volume, unscaled));
+    }
 
+    private IEnumerator PlaySFXAfterDelay(int sfxNum, float delaySeconds, float volume, bool unscaled)
+    {
+        if (!IsValidSfxIndex(sfxNum)) yield break;
+
+        if (unscaled) yield return new WaitForSecondsRealtime(delaySeconds);
+        else yield return new WaitForSeconds(delaySeconds);
+
+        AudioSource audioSource = GetAudioSourceFromPool();
+        audioSource.clip = sfxlist[sfxNum];
+        audioSource.volume = volume;
+        audioSource.loop = false;
+        audioSource.gameObject.SetActive(true);
+        audioSource.priority = 130;
+        audioSource.Play();
+
+        StartCoroutine(DeactivateAfterPlay(audioSource));
+    }
+
+    private bool IsValidSfxIndex(int idx)
+    {
+        return idx >= 0 && idx < sfxlist.Length;
+    }
     /// <summary>
     /// 텍스트(나레이션 등) 재생할 때, 1회용으로 사용
     /// </summary>

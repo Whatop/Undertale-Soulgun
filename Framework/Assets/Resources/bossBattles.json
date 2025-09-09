@@ -106,14 +106,14 @@
           "eventType": "ChangeSoul"
         },
         {
-          "text": "* 이런 . . . 너 많이 다쳤구나?\n<indent=6%>내가 치료해줄게.",
-          "attack": "HealSetting",
+          "text": "* 이 친구는 귀여운 훈련봇,\n<indent=6%> 너를 치료해줄거야",
+          "expression": "Talking",
           "textSpeed": 12,
-          "expression": "Talking"
+          "eventType": "DummySpawn"
         },
         {
           "text": "* 움직여!\n<indent=6%><color=#00FF00>친절</color>을 최대한\n<indent=6%>많이 받는거야!",
-          "expression": "Default",
+          "expression": "Talking",
           "attack": "ShotThePlayer",
           "textSpeed": 20,
           "eventType": "dont_next"
@@ -127,7 +127,7 @@
         },
         {
           "text": "* 다시 해 보자고,\n<indent=6%>알았지?",
-          "expression": "Default",
+          "expression": "Talking",
           "attack": "Attack4"
         },
         {

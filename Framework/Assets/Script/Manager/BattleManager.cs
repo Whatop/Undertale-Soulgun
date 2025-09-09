@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -8,12 +8,12 @@ public class BossDialogue
 {
     public string text;
     public string expression;
-    public string attack; // °ø°İ ÆĞÅÏ
-    public string direction; // ¹æÇâ (Left, Right µî)
-    public string eventType; // Æ¯¼ö ÀÌº¥Æ®
-    public string music; // À½¾Ç ¼³Á¤
-    public int skipToDialogue; // Æ¯Á¤ ´ë»ç·Î ÀÌµ¿
-    public int textSpeed; // ¡ç Ãß°¡: ÀÌ ÁÙ¸¸ÀÇ ÅØ½ºÆ® ¼Óµµ(¿É¼Ç)
+    public string attack; // ê³µê²© íŒ¨í„´
+    public string direction; // ë°©í–¥ (Left, Right ë“±)
+    public string eventType; // íŠ¹ìˆ˜ ì´ë²¤íŠ¸
+    public string music; // ìŒì•… ì„¤ì •
+    public int skipToDialogue; // íŠ¹ì • ëŒ€ì‚¬ë¡œ ì´ë™
+    public int textSpeed; // â† ì¶”ê°€: ì´ ì¤„ë§Œì˜ í…ìŠ¤íŠ¸ ì†ë„(ì˜µì…˜)
 }
 
 [System.Serializable]
@@ -48,23 +48,23 @@ public class BattleManager : MonoBehaviour
     Animator battleAnimator;
     GameManager gameManager;
 
-    public enum BattleState { None, BasicBattle, BossBattle }  // ÀüÅõ »óÅÂ¸¦ Á¤ÀÇ
+    public enum BattleState { None, BasicBattle, BossBattle }  // ì „íˆ¬ ìƒíƒœë¥¼ ì •ì˜
     public BattleState currentState;
 
-    public GameObject[] roomPrefabs;  // ¿©·¯ ÀüÅõ ¹æ ÇÁ¸®ÆÕ ¹è¿­
+    public GameObject[] roomPrefabs;  // ì—¬ëŸ¬ ì „íˆ¬ ë°© í”„ë¦¬íŒ¹ ë°°ì—´
     public Transform roomSpawnPoint;
 
 
-    public GameObject[] enemyPrefabs;  // Àû ÇÁ¸®ÆÕ ¹è¿­
-    public Room currentRoom;  // ÇöÀç ¹æ
+    public GameObject[] enemyPrefabs;  // ì  í”„ë¦¬íŒ¹ ë°°ì—´
+    public Room currentRoom;  // í˜„ì¬ ë°©
 
-    public Transform[] bulletPoints; // ÇÃ¶óÀ§ Àü¿ë
+    public Transform[] bulletPoints; // í”Œë¼ìœ„ ì „ìš©
     public Transform nonePoint;
     public GameObject floweybulletprefab;
 
     public TextAsset bossDataJson;
-    //Å×½ºÆ®¿ë ¾Æ¸¶µµ ³ªÁß¿¡´Â ¹è¿­·Î ÇÏµçÁö º¸½º²¨¸¦ µû·Î ¸¸µå´ÂÁö ÇÒµí
-    //ÀÏ´Ü ÀÌ°Ç Æ©Åä º¸½º¿ë 
+    //í…ŒìŠ¤íŠ¸ìš© ì•„ë§ˆë„ ë‚˜ì¤‘ì—ëŠ” ë°°ì—´ë¡œ í•˜ë“ ì§€ ë³´ìŠ¤êº¼ë¥¼ ë”°ë¡œ ë§Œë“œëŠ”ì§€ í• ë“¯
+    //ì¼ë‹¨ ì´ê±´ íŠœí†  ë³´ìŠ¤ìš© 
     public GameObject Boss_AllObject;
     public GameObject Boss_Face;
     public GameObject Boss_Face_UI;
@@ -74,14 +74,14 @@ public class BattleManager : MonoBehaviour
     public Transform bossPoint;
     public int test_curboss = 0;
     [SerializeField]
-    private List<GameObject> activeBullets = new List<GameObject>(); // ÇöÀç È°¼ºÈ­µÈ ÃÑ¾Ë ¸ñ·Ï
+    private List<GameObject> activeBullets = new List<GameObject>(); // í˜„ì¬ í™œì„±í™”ëœ ì´ì•Œ ëª©ë¡
 
     public TypeEffect currentTypeEffect;
 
-    //ÇÃ·¹ÀÌ¾î
+    //í”Œë ˆì´ì–´
     public PlayerMovement player;
-    //ÇöÀç Àû
-    // ÀüÅõ Áß µîÀåÇÏ´Â "ÇöÀç È°¼ºÈ­µÈ Àû" ¸®½ºÆ®
+    //í˜„ì¬ ì 
+    // ì „íˆ¬ ì¤‘ ë“±ì¥í•˜ëŠ” "í˜„ì¬ í™œì„±í™”ëœ ì " ë¦¬ìŠ¤íŠ¸
     public List<GameObject> curEnemies = new List<GameObject>();
     [SerializeField]
     private List<Transform> bulletSpawnTransforms = new List<Transform>();
@@ -92,44 +92,44 @@ public class BattleManager : MonoBehaviour
     private BossBattleData currentBoss;
     private int currentDialogueIndex = 0;
 
-    public GameObject bulletPointPrefab; // »ı¼ºÇÒ ÇÁ¸®ÆÕ (À¯´ÏÆ¼ ÀÎ½ºÆåÅÍ¿¡¼­ ÁöÁ¤)
-    public Transform[] bulletspawnPoint; // ÃÑ¾Ë »ı¼ºÀ§Ä¡
-    public Transform spawnParent;   // »ı¼ºµÈ ¿ÀºêÁ§Æ®¸¦ ´ãÀ» ºÎ¸ğ ¿ÀºêÁ§Æ® (Á¤¸®¿ë)
+    public GameObject bulletPointPrefab; // ìƒì„±í•  í”„ë¦¬íŒ¹ (ìœ ë‹ˆí‹° ì¸ìŠ¤í™í„°ì—ì„œ ì§€ì •)
+    public Transform[] bulletspawnPoint; // ì´ì•Œ ìƒì„±ìœ„ì¹˜
+    public Transform spawnParent;   // ìƒì„±ëœ ì˜¤ë¸Œì íŠ¸ë¥¼ ë‹´ì„ ë¶€ëª¨ ì˜¤ë¸Œì íŠ¸ (ì •ë¦¬ìš©)
 
-    private bool _floweyHealHit = false; // ÈúÅºÀ» ¸Â¾Ò´Â°¡?
-    private bool canSkipOrNext = true;   // Z/Space·Î ½ºÅµ/´ÙÀ½ °¡´É ¿©ºÎ
-    private float autoNextDelay = 0f;    // next_talk Áö¿¬½Ã°£
-    private Coroutine pendingAutoNext;   // Áö¿¬ ÄÚ·çÆ¾ ÇÚµé
+    private bool _floweyHealHit = false; // ííƒ„ì„ ë§ì•˜ëŠ”ê°€?
+    private bool canSkipOrNext = true;   // Z/Spaceë¡œ ìŠ¤í‚µ/ë‹¤ìŒ ê°€ëŠ¥ ì—¬ë¶€
+    private float autoNextDelay = 0f;    // next_talk ì§€ì—°ì‹œê°„
+    private Coroutine pendingAutoNext;   // ì§€ì—° ì½”ë£¨í‹´ í•¸ë“¤
     private bool awaitingDodgeWindow = false;
     private float hpSnapshot = 0f;
-    private bool nextTalkArmed = false;     // ÀÌ¹ø ´ë»ç ³¡³ª¸é ÀÚµ¿ ÁøÇàÇÒÁö
-    private float nextTalkDelay = 0f;       // ÀÚµ¿ ÁøÇà Áö¿¬ ½Ã°£
-    private int defaultTextSpeed = 10; // ±âº» ÅØ½ºÆ® ¼Óµµ(ÇöÀç ÄÚµåÀÇ 100 À¯Áö)  :contentReference[oaicite:2]{index=2}
+    private bool nextTalkArmed = false;     // ì´ë²ˆ ëŒ€ì‚¬ ëë‚˜ë©´ ìë™ ì§„í–‰í• ì§€
+    private float nextTalkDelay = 0f;       // ìë™ ì§„í–‰ ì§€ì—° ì‹œê°„
+    private int defaultTextSpeed = 10; // ê¸°ë³¸ í…ìŠ¤íŠ¸ ì†ë„(í˜„ì¬ ì½”ë“œì˜ 100 ìœ ì§€)  :contentReference[oaicite:2]{index=2}
 
     public IEnumerator FloweyTutorialSequence()
     {
-        // 1) ¼Ò¿ï ÁÖÀÔ(¿¬Ãâ+UI ÀüÈ¯)
-        HandleSpecialEvent("ChangeSoul", ""); // ÀÌ¹Ì ±¸ÇöµÈ ÀÌº¥Æ® È°¿ë
+        // 1) ì†Œìš¸ ì£¼ì…(ì—°ì¶œ+UI ì „í™˜)
+        HandleSpecialEvent("ChangeSoul", ""); // ì´ë¯¸ êµ¬í˜„ëœ ì´ë²¤íŠ¸ í™œìš©
         yield return new WaitForSeconds(1.2f);
 
-        // 2) Æ©Åä ÃÑ ¹ß»ç Çã¿ë(¶Ç´Â Á¦ÇÑ ÇØÁ¦)
+        // 2) íŠœí†  ì´ ë°œì‚¬ í—ˆìš©(ë˜ëŠ” ì œí•œ í•´ì œ)
         HandleSpecialEvent("tutorialShot", "");
         yield return new WaitForSeconds(0.3f);
 
-        // 3) ÈúÅº Å×½ºÆ® ½ÃÀÛ(¸ÂÀ¸¸é È¸º¹ ¿¬Ãâ, ÇÇÇÏ¸é µµ¹ß ´ë»ç)
+        // 3) ííƒ„ í…ŒìŠ¤íŠ¸ ì‹œì‘(ë§ìœ¼ë©´ íšŒë³µ ì—°ì¶œ, í”¼í•˜ë©´ ë„ë°œ ëŒ€ì‚¬)
         _floweyHealHit = false;
-        BeginHealTest(windowSec: 2.5f); // ¾Æ·¡ ¸Ş¼­µå Ãß°¡
+        BeginHealTest(windowSec: 2.5f); // ì•„ë˜ ë©”ì„œë“œ ì¶”ê°€
         yield return new WaitForSeconds(2.5f);
 
         if (_floweyHealHit)
         {
-            // Èú¿¡ ¸ÂÀº ºĞ±â
-            currentTypeEffect.SetMsg("...±×°É ÀÏºÎ·¯ ¸Â´Ù´Ï? Àç¹Õ³×.", OnSentenceComplete,10, 100, "Smile");
+            // íì— ë§ì€ ë¶„ê¸°
+            currentTypeEffect.SetMsg("...ê·¸ê±¸ ì¼ë¶€ëŸ¬ ë§ë‹¤ë‹ˆ? ì¬ë°Œë„¤.", OnSentenceComplete,10, 100, "Smile");
         }
         else
         {
-            // ÈúÀ» ÇÇÇÑ ºĞ±â
-            currentTypeEffect.SetMsg("Ä¡·áµµ ÇÇÇÏ´Ù´Ï? ³×°¡ ¹» ¿øÇÏ´ÂÁö ¾Ë°Ú¾î.", OnSentenceComplete,10, 100, "Sneer");
+            // íì„ í”¼í•œ ë¶„ê¸°
+            currentTypeEffect.SetMsg("ì¹˜ë£Œë„ í”¼í•˜ë‹¤ë‹ˆ? ë„¤ê°€ ë­˜ ì›í•˜ëŠ”ì§€ ì•Œê² ì–´.", OnSentenceComplete,10, 100, "Sneer");
         }
     }
     private IEnumerator StartDodgeWindow(float windowSec, int gotoDialogueIndexOnHit)
@@ -138,7 +138,7 @@ public class BattleManager : MonoBehaviour
         hpSnapshot = player.GetHp();
         float endTime = Time.time + windowSec;
 
-        // Ã¼Å© ±¸°£ µ¿¾È dont_next·Î ¹­¾îµÎ°í, °ø°İ ÆĞÅÏ¸¸ Èê¸²
+        // ì²´í¬ êµ¬ê°„ ë™ì•ˆ dont_nextë¡œ ë¬¶ì–´ë‘ê³ , ê³µê²© íŒ¨í„´ë§Œ í˜ë¦¼
         canSkipOrNext = false;
 
         while (Time.time < endTime)
@@ -146,26 +146,26 @@ public class BattleManager : MonoBehaviour
 
         awaitingDodgeWindow = false;
 
-        // ÇÇ°İ ÆÇÁ¤: Ã¼·ÂÀÌ ÁÙ¾úÀ¸¸é ÇÇ°İ
+        // í”¼ê²© íŒì •: ì²´ë ¥ì´ ì¤„ì—ˆìœ¼ë©´ í”¼ê²©
         if (player.GetComponent<LivingObject>().GetHp() > hpSnapshot)
         {
             JumpToDialogue(gotoDialogueIndexOnHit);
         }
         else
         {
-            // »ıÁ¸/È¸ÇÇ ¼º°ø ¡æ ´ÙÀ½ ½Ã³ª¸®¿À
+            // ìƒì¡´/íšŒí”¼ ì„±ê³µ â†’ ë‹¤ìŒ ì‹œë‚˜ë¦¬ì˜¤
             canSkipOrNext = true;
             DisplayNextDialogue();
         }
     }
-    // °øÅëÀ¸·Î ¾µ ÇïÆÛ
+    // ê³µí†µìœ¼ë¡œ ì“¸ í—¬í¼
     private int ResolveSpeed(BossDialogue d)
     {
         return (d != null && d.textSpeed > 0) ? d.textSpeed : defaultTextSpeed;
     }
     private void JumpToDialogue(int index1based)
     {
-        // ÇöÀç º¸½ºÀÇ ÀüÃ¼ ´ë»ç ¸®½ºÆ®¿¡¼­ index1basedºÎÅÍ Å¥¸¦ Àç±¸¼º
+        // í˜„ì¬ ë³´ìŠ¤ì˜ ì „ì²´ ëŒ€ì‚¬ ë¦¬ìŠ¤íŠ¸ì—ì„œ index1basedë¶€í„° íë¥¼ ì¬êµ¬ì„±
         boss_sentences.Clear();
         currentDialogueIndex = Mathf.Clamp(index1based - 1, 0, currentBoss.dialogues.Count - 1);
         for (int i = currentDialogueIndex; i < currentBoss.dialogues.Count; i++)
@@ -194,10 +194,10 @@ public class BattleManager : MonoBehaviour
     // BattleManager
     private void BeginHealTest(float windowSec)
     {
-        // ÇÃ·¹ÀÌ¾î ±ÙÃ³ È¤Àº È­¸é Áß¾Ó¿¡¼­ ÈúÅº ÇÏ³ª »ı¼º
-        // prefab: "Kindness_Heal" À¸·Î Ç®¿¡¼­ ²¨³¿
-        SetAttack("Normal", 30, 0f); // ¿¹: °¡¿îµ¥ Æ÷ÀÎÆ®
-                                     // ¡è ³»ºÎ¿¡¼­ SpawnBullets È£Ãâ ¡æ prefab ÀÎÀÚ¸¦ "Kindness_Heal"·Î ³Ñ±âµµ·Ï ¿À¹ö·Îµå Ãß°¡ÇØµµ µÊ
+        // í”Œë ˆì´ì–´ ê·¼ì²˜ í˜¹ì€ í™”ë©´ ì¤‘ì•™ì—ì„œ ííƒ„ í•˜ë‚˜ ìƒì„±
+        // prefab: "Kindness_Heal" ìœ¼ë¡œ í’€ì—ì„œ êº¼ëƒ„
+        SetAttack("Normal", 30, 0f); // ì˜ˆ: ê°€ìš´ë° í¬ì¸íŠ¸
+                                     // â†‘ ë‚´ë¶€ì—ì„œ SpawnBullets í˜¸ì¶œ â†’ prefab ì¸ìë¥¼ "Kindness_Heal"ë¡œ ë„˜ê¸°ë„ë¡ ì˜¤ë²„ë¡œë“œ ì¶”ê°€í•´ë„ ë¨
     }
     [SerializeField]
     private List<BulletPool> bulletPools;
@@ -221,7 +221,7 @@ public class BattleManager : MonoBehaviour
         }
     }
     public bool isTalking = false;
-    private bool isFirstInteraction = true; // Ã³À½ ´ëÈ­ÀÎÁö È®ÀÎ
+    private bool isFirstInteraction = true; // ì²˜ìŒ ëŒ€í™”ì¸ì§€ í™•ì¸
     public bool isEvent = false;
     public int boss_id;
 
@@ -239,7 +239,7 @@ public class BattleManager : MonoBehaviour
         boss_sentences = new Queue<BossDialogue>();
 
         InitializeBulletPools();
-        // ÇÊ¼ö »óÅÂ ÃÊ±âÈ­
+        // í•„ìˆ˜ ìƒíƒœ ì´ˆê¸°í™”
         isTalking = false;
         isFirstInteraction = true;
         isEvent = false;
@@ -253,23 +253,23 @@ public class BattleManager : MonoBehaviour
         HandleInteraction();
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            //SetAttack("Split", 0, 1f);//ºĞ¿­
+            //SetAttack("Split", 0, 1f);//ë¶„ì—´
             // int value = UnityEngine.Random.Range(0, 59);
-            // SetAttack("GasterBlaster", value);//È¸¿À¸®
+            // SetAttack("GasterBlaster", value);//íšŒì˜¤ë¦¬
             ExecuteAttack("HealSetting");
 
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            //SetAttack("Spiral_S", 10, 1f);//È¸¿À¸®
-            //SetAttack("Spiral_S", 24, 1f);//È¸¿À¸®
+            //SetAttack("Spiral_S", 10, 1f);//íšŒì˜¤ë¦¬
+            //SetAttack("Spiral_S", 24, 1f);//íšŒì˜¤ë¦¬
             ExecuteAttack("ShotThePlayer");
 
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            SetAttack("Homing", 0, 1f);//À¯µµ
-            SetAttack("GasterBlaster", 0);//À¯µµ
+            SetAttack("Homing", 0, 1f);//ìœ ë„
+            SetAttack("GasterBlaster", 0);//ìœ ë„
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
@@ -316,7 +316,7 @@ public class BattleManager : MonoBehaviour
     }
     private void LateUpdate()
     {
-        // ºñÈ°¼ºÈ­µÈ ÃÑ¾Ë Á¦°Å
+        // ë¹„í™œì„±í™”ëœ ì´ì•Œ ì œê±°
         activeBullets.RemoveAll(b => b == null || !b.activeInHierarchy);
     }
 
@@ -324,7 +324,7 @@ public class BattleManager : MonoBehaviour
     #region Indicators
 
     /// <summary>
-    /// ¸ğµç ÀûÀÇ Å¸°Ù ÀÎµğÄÉÀÌÅÍ ²ô±â
+    /// ëª¨ë“  ì ì˜ íƒ€ê²Ÿ ì¸ë””ì¼€ì´í„° ë„ê¸°
     /// </summary>
     public void ClearAllEnemyIndicators()
     {
@@ -336,17 +336,17 @@ public class BattleManager : MonoBehaviour
         }
     }
     /// <summary>
-    /// ÇöÀç ÀüÅõ ÁßÀÎ Àûµé Áß ÇÃ·¹ÀÌ¾î¿Í °¡Àå °¡±î¿î Àû¸¸ ÀÎµğÄÉÀÌÅÍ¸¦ ÄÕ´Ï´Ù.
+    /// í˜„ì¬ ì „íˆ¬ ì¤‘ì¸ ì ë“¤ ì¤‘ í”Œë ˆì´ì–´ì™€ ê°€ì¥ ê°€ê¹Œìš´ ì ë§Œ ì¸ë””ì¼€ì´í„°ë¥¼ ì¼­ë‹ˆë‹¤.
     /// </summary>
     public void HighlightClosestEnemyIndicator()
     {
-        // 1) ÇÃ·¹ÀÌ¾î À§Ä¡
+        // 1) í”Œë ˆì´ì–´ ìœ„ì¹˜
         Vector3 playerPos = GameManager.Instance.GetPlayerData().player.transform.position;
 
         EnemyController closestEC = null;
         float closestDistSq = float.MaxValue;
 
-        // 2) ¸ğµç Àû ÀÎµğÄÉÀÌÅÍ ²ô±â
+        // 2) ëª¨ë“  ì  ì¸ë””ì¼€ì´í„° ë„ê¸°
         foreach (var go in curEnemies)
         {
             var ec = go.GetComponent<EnemyController>();
@@ -354,7 +354,7 @@ public class BattleManager : MonoBehaviour
                 ec.SetTargetingSprite(false);
         }
 
-        // 3) °¡Àå °¡±î¿î Àû Ã£±â
+        // 3) ê°€ì¥ ê°€ê¹Œìš´ ì  ì°¾ê¸°
         foreach (var go in curEnemies)
         {
             var ec = go.GetComponent<EnemyController>();
@@ -368,7 +368,7 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        // 4) °¡Àå °¡±î¿î Àû¿¡ ÀÎµğÄÉÀÌÅÍ ÄÑ±â
+        // 4) ê°€ì¥ ê°€ê¹Œìš´ ì ì— ì¸ë””ì¼€ì´í„° ì¼œê¸°
         if (closestEC != null)
             closestEC.SetTargetingSprite(true);
     }
@@ -441,7 +441,7 @@ public class BattleManager : MonoBehaviour
     {
         if (!bulletPoolDict.ContainsKey(key))
         {
-            Debug.LogWarning($"ÃÑ¾Ë Ç® '{key}'ÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogWarning($"ì´ì•Œ í’€ '{key}'ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             return null;
         }
 
@@ -452,11 +452,11 @@ public class BattleManager : MonoBehaviour
                 return obj;
         }
 
-        // ¸ğµÎ »ç¿ë ÁßÀÌ¸é »õ·Î »ı¼º
+        // ëª¨ë‘ ì‚¬ìš© ì¤‘ì´ë©´ ìƒˆë¡œ ìƒì„±
         GameObject prefab = bulletPools.Find(p => p.bulletName == key)?.prefab;
         if (prefab == null)
         {
-            Debug.LogError($"'{key}'¿¡ ´ëÇÑ ÇÁ¸®ÆÕÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError($"'{key}'ì— ëŒ€í•œ í”„ë¦¬íŒ¹ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return null;
         }
 
@@ -480,10 +480,10 @@ public class BattleManager : MonoBehaviour
             {
                 Vector3 spawnPosition = new Vector3(xPositions[i], yPositions[j], 0);
                 GameObject obj = Instantiate(bulletPointPrefab, Vector3.zero, Quaternion.identity, spawnParent);
-                obj.transform.position = spawnPosition;  // À§Ä¡ ¼³Á¤
-                obj.name = $"Bullet_{i}_{j}"; // ÀÌ¸§ ¼³Á¤
+                obj.transform.position = spawnPosition;  // ìœ„ì¹˜ ì„¤ì •
+                obj.name = $"Bullet_{i}_{j}"; // ì´ë¦„ ì„¤ì •
 
-                bulletSpawnTransforms.Add(obj.transform); // Transform ÀúÀå
+                bulletSpawnTransforms.Add(obj.transform); // Transform ì €ì¥
             }
         }
     }
@@ -529,18 +529,18 @@ public class BattleManager : MonoBehaviour
     public void BattleStart(int eventNumber)
     {
         gameManager.isBattle = true;
-        // »ç¿îµå Àç»ı
+        // ì‚¬ìš´ë“œ ì¬ìƒ
         SoundManager.Instance.SFXPlay("BattleStart", 0);
-        // ÀüÅõ ¾Ö´Ï¸ŞÀÌ¼Ç ½ÃÀÛ
+        // ì „íˆ¬ ì• ë‹ˆë©”ì´ì…˜ ì‹œì‘
         battleAnimator.SetTrigger("BattleStart");
 
-        // ÄÚ·çÆ¾À¸·Î ÀüÅõ¸¦ Áö¿¬½ÃÄÑ ½ÃÀÛ
+        // ì½”ë£¨í‹´ìœ¼ë¡œ ì „íˆ¬ë¥¼ ì§€ì—°ì‹œì¼œ ì‹œì‘
         prevPos = player.transform.position;
-        if(eventNumber==2) // switch ·Î º¯°æÇØÁ¤
+        if(eventNumber==2) // switch ë¡œ ë³€ê²½í•´ì •
         BossBattleSetting();
 
         StartCoroutine(StartBattleAfterDelay(eventNumber, 1.5f));
-        Debug.Log("ÀüÅõ ½ÃÀÛ");
+        Debug.Log("ì „íˆ¬ ì‹œì‘");
     }
     private void LoadBossData()
     {
@@ -576,13 +576,13 @@ public class BattleManager : MonoBehaviour
 
         if (isTalking && !UIManager.Instance.isInventroy)
         {
-            // ´ëÈ­ Áß¿¡´Â »óÈ£ÀÛ¿ë Á¦ÇÑ
+            // ëŒ€í™” ì¤‘ì—ëŠ” ìƒí˜¸ì‘ìš© ì œí•œ
             UIManager.Instance.isInventroy = false;
 
             if (!canSkipOrNext)
                 return;
 
-            // Å¸ÀÌÇÎ È¿°ú ÁßÀÎ °æ¿ì
+            // íƒ€ì´í•‘ íš¨ê³¼ ì¤‘ì¸ ê²½ìš°
             if (IsEffecting())
             {
                 if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space))
@@ -596,7 +596,7 @@ public class BattleManager : MonoBehaviour
                 DisplayNextDialogue();
             }
 
-            return; // ´ëÈ­ ÁßÀÌ¹Ç·Î ³ª¸ÓÁö »óÈ£ÀÛ¿ëÀº Ã³¸®ÇÏÁö ¾ÊÀ½
+            return; // ëŒ€í™” ì¤‘ì´ë¯€ë¡œ ë‚˜ë¨¸ì§€ ìƒí˜¸ì‘ìš©ì€ ì²˜ë¦¬í•˜ì§€ ì•ŠìŒ
         }
 
 
@@ -606,7 +606,7 @@ public class BattleManager : MonoBehaviour
         boss_sentences.Clear();
         isTalking = true;
 
-        // º¸½º µ¥ÀÌÅÍ °Ë»ö
+        // ë³´ìŠ¤ ë°ì´í„° ê²€ìƒ‰
         currentBoss = FindBossBattle(bossID);
         if (currentBoss == null)
         {
@@ -614,7 +614,7 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // ´ë»ç µ¥ÀÌÅÍ¸¦ Å¥¿¡ Ãß°¡
+        // ëŒ€ì‚¬ ë°ì´í„°ë¥¼ íì— ì¶”ê°€
         foreach (var dialogue in currentBoss.dialogues)
         {
             boss_sentences.Enqueue(new BossDialogue
@@ -630,7 +630,7 @@ public class BattleManager : MonoBehaviour
             });
         }
 
-        // Ã¹ ¹øÂ° ´ë»ç Ãâ·Â
+        // ì²« ë²ˆì§¸ ëŒ€ì‚¬ ì¶œë ¥
         DisplayNextDialogue();
     }
     private void DisplayNextDialogue()
@@ -642,7 +642,7 @@ public class BattleManager : MonoBehaviour
         }
 
         var dialogue = boss_sentences.Dequeue();
-        // Æ¯¼ö ÀÌº¥Æ® Ã³¸®
+        // íŠ¹ìˆ˜ ì´ë²¤íŠ¸ ì²˜ë¦¬
         if (!string.IsNullOrEmpty(dialogue.eventType))
         {
             int spd = ResolveSpeed(dialogue);
@@ -655,10 +655,10 @@ public class BattleManager : MonoBehaviour
             int spd = ResolveSpeed(dialogue);
             defaultTextSpeed = spd;
             currentTypeEffect.SetMsg(dialogue.text, OnSentenceComplete, defaultTextSpeed, currentBoss.bossID, dialogue.expression);
-            // Ç¥Á¤ ¼³Á¤
+            // í‘œì • ì„¤ì •
             SetBossExpression(dialogue.expression);
         }
-        // °ø°İ ÆĞÅÏ ½ÇÇà
+        // ê³µê²© íŒ¨í„´ ì‹¤í–‰
         if (!string.IsNullOrEmpty(dialogue.attack))
         {
             ExecuteAttack(dialogue.attack);
@@ -666,11 +666,11 @@ public class BattleManager : MonoBehaviour
 
 
 
-        // Æ¯Á¤ ´ë»ç·Î °Ç³Ê¶Ù±â Ã³¸®
+        // íŠ¹ì • ëŒ€ì‚¬ë¡œ ê±´ë„ˆë›°ê¸° ì²˜ë¦¬
         if (currentBoss.dialogues[currentDialogueIndex].skipToDialogue > 0)
         {
             currentDialogueIndex = currentBoss.dialogues[currentDialogueIndex].skipToDialogue - 1;
-            DisplayNextDialogue(); // °Ç³Ê¶Ú ´ë»ç·Î Áï½Ã ÀÌµ¿
+            DisplayNextDialogue(); // ê±´ë„ˆë›´ ëŒ€ì‚¬ë¡œ ì¦‰ì‹œ ì´ë™
         }
         else
         {
@@ -697,7 +697,7 @@ public class BattleManager : MonoBehaviour
         return null;
     }
 
-    // ÀÚµ¿ ´ÙÀ½À¸·Î ³Ñ¾î°¡±â
+    // ìë™ ë‹¤ìŒìœ¼ë¡œ ë„˜ì–´ê°€ê¸°
     private IEnumerator AutoNextAfter(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -705,14 +705,14 @@ public class BattleManager : MonoBehaviour
         DisplayNextDialogue();
     }
 
-    public void ContinueDialogue()  // ¿ÜºÎ ÀÌº¥Æ®°¡ È£Ãâ
+    public void ContinueDialogue()  // ì™¸ë¶€ ì´ë²¤íŠ¸ê°€ í˜¸ì¶œ
     {
         if (!isTalking) return;
         if (pendingAutoNext != null) { StopCoroutine(pendingAutoNext); pendingAutoNext = null; }
         canSkipOrNext = true;
         DisplayNextDialogue();
     }
-    // À¯Æ¿: "next_talk:1.5" ÇüÅÂ ÆÄ½Ì
+    // ìœ í‹¸: "next_talk:1.5" í˜•íƒœ íŒŒì‹±
     private float ParseDelay(string raw, float fallback)
     {
         int i = raw.IndexOf(':');
@@ -725,22 +725,22 @@ public class BattleManager : MonoBehaviour
     private void OnSentenceComplete()
     {
         SetBossExpression("Default");
-        Debug.Log("º¸½º ¹®ÀåÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.");
+        Debug.Log("ë³´ìŠ¤ ë¬¸ì¥ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
         SetBossExpression("Restare");
         if (nextTalkArmed)
             StartCoroutine(NextTalkAfterDelay());
     }
     private IEnumerator NextTalkAfterDelay()
     {
-        // È¤½Ã ¸ğ¸¦ ÀÜ¿© ÇÁ·¹ÀÓ º¸È£
+        // í˜¹ì‹œ ëª¨ë¥¼ ì”ì—¬ í”„ë ˆì„ ë³´í˜¸
         yield return null;
 
-        // ´ë»ç ³¡³­ ½ÃÁ¡ º¸Àå + Áö¿¬
+        // ëŒ€ì‚¬ ëë‚œ ì‹œì  ë³´ì¥ + ì§€ì—°
         if (nextTalkDelay > 0f)
             yield return new WaitForSeconds(nextTalkDelay);
 
         nextTalkArmed = false;
-        canSkipOrNext = true; // ÇÊ¿ä½Ã ÇØÁ¦
+        canSkipOrNext = true; // í•„ìš”ì‹œ í•´ì œ
         DisplayNextDialogue();
     }
     public void EndDialogue()
@@ -762,13 +762,13 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void SetBossExpression(string expression) //@@@ test ¿ë
+    private void SetBossExpression(string expression) //@@@ test ìš©
     {
-        Debug.Log($"º¸½º Ç¥Á¤ : {expression}");
-        // ¾Ö´Ï¸ŞÀÌ¼Ç Æ®¸®°Å ¼³Á¤
+        Debug.Log($"ë³´ìŠ¤ í‘œì • : {expression}");
+        // ì• ë‹ˆë©”ì´ì…˜ íŠ¸ë¦¬ê±° ì„¤ì •
         if (!string.IsNullOrEmpty(expression))
         {
-            Animator animator = null; // Áö¿ª º¯¼ö ¼±¾ğ
+            Animator animator = null; // ì§€ì—­ ë³€ìˆ˜ ì„ ì–¸
             switch (test_curboss)
             {
                 case 0:
@@ -823,28 +823,28 @@ public class BattleManager : MonoBehaviour
                 break;
 
             case "Attack3":
-                Debug.Log("¿ŞÂÊ °ø°İ");
+                Debug.Log("ì™¼ìª½ ê³µê²©");
                 //SpawnAndMoveBullets();
                 // MoveBulletsInDirection(Vector2.left,10);
                 break;
 
 
             case "Attack4":
-                Debug.Log("À¯µµ");
+                Debug.Log("ìœ ë„");
                 // SpawnAndMoveBullets();
                 //StartCoroutine(HomingBullets(10.5f, 8f));
 
                 break;
 
             case "Attack5":
-                Debug.Log("È¸¿À¸®");
+                Debug.Log("íšŒì˜¤ë¦¬");
                 // SpawnAndMoveBullets();
                 // StartCoroutine(SpiralBullets(120, 2.5f));
 
                 break;
 
             case "Attack6":
-                Debug.Log("ºĞ¿­");
+                Debug.Log("ë¶„ì—´");
                 // SpawnAndMoveBullets();
                 // StartCoroutine(SplitBullets(10, 8f));
 
@@ -918,7 +918,7 @@ public class BattleManager : MonoBehaviour
                 break;
         }
     }
-    // ÃÑ¾ËÀ» ½ºÆùÇÏ°í Æ¯Á¤ Å¸ÀÔÀÇ ÆĞÅÏÀ» Àû¿ëÇÏ´Â ¸Ş¼­µå
+    // ì´ì•Œì„ ìŠ¤í°í•˜ê³  íŠ¹ì • íƒ€ì…ì˜ íŒ¨í„´ì„ ì ìš©í•˜ëŠ” ë©”ì„œë“œ
     public void SpawnBullets(
        BulletType bulletType,
        int bulletpoint = -1,
@@ -1000,18 +1000,21 @@ public class BattleManager : MonoBehaviour
                 currentTypeEffect.Clear();
                 gameManager.GetPlayerData().player.GetComponent<PlayerMovement>().EnableSoul(0.7f);
                 gameManager.GetPlayerData().player.GetComponent<PlayerMovement>().MakePlayerTransparent();
-                SetBossExpression("Sink");  // º¸½ºÀÇ ¾Ö´Ï¸ŞÀÌ¼Ç 'Sink'·Î ¼³Á¤
+                SetBossExpression("Sink");  // ë³´ìŠ¤ì˜ ì• ë‹ˆë©”ì´ì…˜ 'Sink'ë¡œ ì„¤ì •
                 test_curboss = 1;
                 Boss_Face_UI.SetActive(true);
                 SetBossExpression("Appear");
-                //ingame sink Å°°í, ui Å°±â
+                nextTalkArmed = true;
+                nextTalkDelay = 1;   // ë‚˜ì¤‘ì— íŒŒì‹± ë¶™ì´ë©´ ë³€ê²½
+                canSkipOrNext = false;
+                //ingame sink í‚¤ê³ , ui í‚¤ê¸°
                 StartCoroutine(FloweyAnimationThenNextDialogue(dialogue, 1.5f));
         
                 break;
 
             case "tutorialShot":
 
-                //@@@¼öÁ¤ÇÒ°Å
+                //@@@ìˆ˜ì •í• ê±°
 
                 gameManager.isBattle = true;
                 gameManager.GetPlayerData().player.GetComponent<PlayerMovement>().tutorialDontShot = false;
@@ -1022,64 +1025,83 @@ public class BattleManager : MonoBehaviour
                 ExecuteAttack("HealSetting");
                 break;
 
+            case "DummySpawn":
+                currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, currentBoss.bossID);
+                nextTalkArmed = true;
+                nextTalkDelay = 15.0f;
+
+                // ì´ë²¤íŠ¸ ì—°ì¶œ(ë‚™í•˜/ì‚¬ìš´ë“œ) ë™ì•ˆ ì ê¸ˆ
+                canSkipOrNext = false;
+
+                Vector2 topPos = nonePoint.position;
+                topPos = new Vector3(56, 8, nonePoint.position.z);
+                GameObject enemyInstance = Instantiate(enemyPrefabs[2], topPos, Quaternion.identity);
+                enemyInstance.GetComponent<Animator>().SetTrigger("Fall");
+                SoundManager.Instance.SFXPlay("Fall", 113);
+                SoundManager.Instance.SFXPlayDelayed("Down", 121, 5f, 1);
+                curEnemies.Add(enemyInstance);
+
+                // 5ì´ˆ ë’¤ íì„¸íŒ…ì„ ì‹¤í–‰í•˜ë©´ì„œ ìŠ¤í‚µ/ë‹¤ìŒ í—ˆìš©
+                StartCoroutine(ExecuteHealSettingWrapper(5f, unlockSkip: true));
+                break;
             // BattleManager.HandleSpecialEvent(...)
             case "next_talk":
-                    // 1) ÀÌ ÁÙ ÅØ½ºÆ®¸¦ ¸ÕÀú Âï´Â´Ù (Å¸ÀÌÇÎ ¿Ï·á Äİ¹é ÇÊ¿ä)
+                    // 1) ì´ ì¤„ í…ìŠ¤íŠ¸ë¥¼ ë¨¼ì € ì°ëŠ”ë‹¤ (íƒ€ì´í•‘ ì™„ë£Œ ì½œë°± í•„ìš”)
                     currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, currentBoss.bossID);
 
-                    // 2) ¿Ï·á ÈÄ ÀÚµ¿ ÁøÇàÀ» '¹«Àå'ÇÑ´Ù
+                    // 2) ì™„ë£Œ í›„ ìë™ ì§„í–‰ì„ 'ë¬´ì¥'í•œë‹¤
                     nextTalkArmed = true;
-                    nextTalkDelay = 1.0f;   // ³ªÁß¿¡ ÆÄ½Ì ºÙÀÌ¸é º¯°æ
-                    canSkipOrNext = false;  // ÀÔ·Â Àá±İ (¼±ÅÃ)
+                    nextTalkDelay = 1.0f;   // ë‚˜ì¤‘ì— íŒŒì‹± ë¶™ì´ë©´ ë³€ê²½
+                    canSkipOrNext = false;  // ì…ë ¥ ì ê¸ˆ (ì„ íƒ)
                     break;
 
             case "dont_next":
-                    // 1) ÀÌ ÁÙ ÅØ½ºÆ®¸¦ Âï´Â´Ù
+                    // 1) ì´ ì¤„ í…ìŠ¤íŠ¸ë¥¼ ì°ëŠ”ë‹¤
                     currentTypeEffect.SetMsg(dialogue, OnSentenceComplete,defaultTextSpeed, currentBoss.bossID);
 
-                    // 2) ¹İµå½Ã ÀÌº¥Æ®·Î¸¸ Ç®¸®µµ·Ï Àá±İ
+                    // 2) ë°˜ë“œì‹œ ì´ë²¤íŠ¸ë¡œë§Œ í’€ë¦¬ë„ë¡ ì ê¸ˆ
                     canSkipOrNext = false;
                     break;
 
             case "WaitEmotion":
-                    canSkipOrNext = false;  // Å° ÀÔ·ÂÀ¸·Î¸¸ ÁøÇà
-                    UIManager.Instance.ShowQuickText("* [E] °¨Á¤Ç¥ÇöÀ» ÇØº¸ÀÚ!");
+                    canSkipOrNext = false;  // í‚¤ ì…ë ¥ìœ¼ë¡œë§Œ ì§„í–‰
+                    UIManager.Instance.ShowQuickText("* [E] ê°ì •í‘œí˜„ì„ í•´ë³´ì!");
                     StartCoroutine(WaitEmotionKeyThenContinue());
                     break;
             case "ReceiveEmotion":
-                  string picked = UIManager.Instance.preEmotion; // ±¸ÇöµÇ¾îÀÖ´Ù¸é »ç¿ë
+                  string picked = UIManager.Instance.preEmotion; // êµ¬í˜„ë˜ì–´ìˆë‹¤ë©´ ì‚¬ìš©
                   if (picked == "Accept" || picked == "Help")
                       JumpToDialogue(11);
                   else
-                      JumpToDialogue(9); // ¹İº¹
+                      JumpToDialogue(9); // ë°˜ë³µ
                     break;
             case "SummonExtractor":
-                    // Çã¼ö¾Æºñ ¼ÒÈ¯
-                    // 1) ¼ÒÈ¯
+                    // í—ˆìˆ˜ì•„ë¹„ ì†Œí™˜
+                    // 1) ì†Œí™˜
                     //var extractor = Instantiate(extractorPrefab, player.transform.position + Vector3.right * 1.5f, Quaternion.identity);
-                    //// 2) E Å° »óÈ£ÀÛ¿ë ´ë±â
+                    //// 2) E í‚¤ ìƒí˜¸ì‘ìš© ëŒ€ê¸°
                     //canSkipOrNext = false;
-                    //UIManager.Instance.quickTextBar.ShowMessage("* [E] ¿µÈ¥ ÃßÃâ±â¸¦ »ç¿ëÇØºÁ!", 2f);
+                    //UIManager.Instance.quickTextBar.ShowMessage("* [E] ì˜í˜¼ ì¶”ì¶œê¸°ë¥¼ ì‚¬ìš©í•´ë´!", 2f);
                     //StartCoroutine(WaitInteractAndApplySoul(extractor));
                     break;
             case "UnlockCallFlowey":
-                    // ÇÃ¶óÀ§ ¿¬·«ÀÌ Ãß°¡µÊ!
+                    // í”Œë¼ìœ„ ì—°ëµì´ ì¶”ê°€ë¨!
                     //GameManager.Instance.flags["CanCallFlowey"] = true;
-                    //UIManager.Instance.quickTextBar.ShowMessage("* ¾ğÁ¦µç [C]·Î ³ª¸¦ ºÒ·¯!", 2f);
+                    //UIManager.Instance.quickTextBar.ShowMessage("* ì–¸ì œë“  [C]ë¡œ ë‚˜ë¥¼ ë¶ˆëŸ¬!", 2f);
                     //ContinueDialogue();
                     break;
             case "LowerTone":
-                // À½¾ÇÀ» ³·Àº ÅæÀ¸·Î º¯°æ
+                // ìŒì•…ì„ ë‚®ì€ í†¤ìœ¼ë¡œ ë³€ê²½
                 Debug.Log("Changing music to lower tone.");
-                SoundManager.Instance.PlayMusic("LowerTone");  // À½¾ÇÀ» º¯°æÇÏ´Â ¿¹½Ã
+                SoundManager.Instance.PlayMusic("LowerTone");  // ìŒì•…ì„ ë³€ê²½í•˜ëŠ” ì˜ˆì‹œ
                 break;
 
             case "CreepFace":
-                // ¼Ò¸®³ª ¾Ö´Ï¸ŞÀÌ¼ÇÀ» Á¡Á¡ ´À¸®°Ô, creep_face·Î ÀüÈ¯
+                // ì†Œë¦¬ë‚˜ ì• ë‹ˆë©”ì´ì…˜ì„ ì ì  ëŠë¦¬ê²Œ, creep_faceë¡œ ì „í™˜
                 Debug.Log("Slowing down sound and switching to creep face.");
-                // À½¼ºÀ» ´À¸®°Ô ÇÏ°Å³ª ¾Ö´Ï¸ŞÀÌ¼ÇÀ» º¯°æÇÏ´Â ·ÎÁ÷ Ãß°¡
-                SoundManager.Instance.SlowDownMusic();  // À½¾ÇÀ» ´À¸®°Ô Á¶ÀıÇÏ´Â ¿¹½Ã
-                SetBossExpression("Smile");  // º¸½ºÀÇ Ç¥Á¤À» 'CreepFace'·Î ¼³Á¤
+                // ìŒì„±ì„ ëŠë¦¬ê²Œ í•˜ê±°ë‚˜ ì• ë‹ˆë©”ì´ì…˜ì„ ë³€ê²½í•˜ëŠ” ë¡œì§ ì¶”ê°€
+                SoundManager.Instance.SlowDownMusic();  // ìŒì•…ì„ ëŠë¦¬ê²Œ ì¡°ì ˆí•˜ëŠ” ì˜ˆì‹œ
+                SetBossExpression("Smile");  // ë³´ìŠ¤ì˜ í‘œì •ì„ 'CreepFace'ë¡œ ì„¤ì •
                 Debug.Log("Revelation after 1 second.");
                 StartCoroutine(HandleFinalRevelation());
                 break;
@@ -1088,38 +1110,48 @@ public class BattleManager : MonoBehaviour
                 Debug.LogWarning($"Unknown special event: {eventType}");
                 break;
         }
+
+    }
+    private IEnumerator ExecuteHealSettingWrapper(float waitTime, bool unlockSkip = false)
+    {
+        yield return new WaitForSeconds(waitTime);
+
+        if (unlockSkip)
+            canSkipOrNext = true;   // ğŸ”“ ì´ íƒ€ì´ë°ë¶€í„° Z/Space í—ˆìš©
+
+        ExecuteAttack("HealSetting");
     }
     private IEnumerator WaitEmotionKeyThenContinue()
     {
-        // QuickTextBar°¡ ´İÈù µÚ¿¡µµ °è¼Ó ´ë±â
+        // QuickTextBarê°€ ë‹«íŒ ë’¤ì—ë„ ê³„ì† ëŒ€ê¸°
         while (!Input.GetKeyDown(KeyCode.E))
             yield return null;
 
-        // ¿©±â¼­ ½ÇÁ¦ °¨Á¤ ¼±ÅÃ UI ¿­¾îµµ µÊ (Áö±İÀº Å° ÀÔ·Â¸¸ Ã¼Å©)
+        // ì—¬ê¸°ì„œ ì‹¤ì œ ê°ì • ì„ íƒ UI ì—´ì–´ë„ ë¨ (ì§€ê¸ˆì€ í‚¤ ì…ë ¥ë§Œ ì²´í¬)
         ContinueDialogue();
     }
-    // ÇÃ¶óÀ§ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³­ ÈÄ ´ÙÀ½ ´ë»ç¸¦ ÁøÇàÇÏ´Â ÄÚ·çÆ¾
+    // í”Œë¼ìœ„ ì• ë‹ˆë©”ì´ì…˜ì´ ëë‚œ í›„ ë‹¤ìŒ ëŒ€ì‚¬ë¥¼ ì§„í–‰í•˜ëŠ” ì½”ë£¨í‹´
     private IEnumerator FloweyAnimationThenNextDialogue(string dialogue, float waitTime)
     {
-        // waitTime µ¿¾È ´ë±â(¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³¯ ¶§±îÁö È¤Àº ³Ë³ËÈ÷ Àâ¾ÆµĞ ½Ã°£)
+        // waitTime ë™ì•ˆ ëŒ€ê¸°(ì• ë‹ˆë©”ì´ì…˜ì´ ëë‚  ë•Œê¹Œì§€ í˜¹ì€ ë„‰ë„‰íˆ ì¡ì•„ë‘” ì‹œê°„)
         yield return new WaitForSeconds(waitTime);
         SetBossExpression("Talking");
         currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, 100);
     }
     private IEnumerator HandleFinalRevelation()
     {
-        yield return new WaitForSeconds(1f);  // 1ÃÊ ±â´Ù¸®±â
-        Debug.Log("´«Ä¡Ã«´Ù´Â ´ë»ç: ÀÌÁ¦ ³×°¡ ¹¹ ÇÏ´ÂÁö ¾Ë°Ú´Ù.");
-        // Ãß°¡ÀûÀÎ ´ë»ç³ª ¾Ö´Ï¸ŞÀÌ¼Ç Ã³¸®
+        yield return new WaitForSeconds(1f);  // 1ì´ˆ ê¸°ë‹¤ë¦¬ê¸°
+        Debug.Log("ëˆˆì¹˜ì±˜ë‹¤ëŠ” ëŒ€ì‚¬: ì´ì œ ë„¤ê°€ ë­ í•˜ëŠ”ì§€ ì•Œê² ë‹¤.");
+        // ì¶”ê°€ì ì¸ ëŒ€ì‚¬ë‚˜ ì• ë‹ˆë©”ì´ì…˜ ì²˜ë¦¬
     }
 
 
     private IEnumerator StartBattleAfterDelay(int eventNumber, float delay)
     {
-        // ÁöÁ¤µÈ ½Ã°£ µ¿¾È ´ë±â
+        // ì§€ì •ëœ ì‹œê°„ ë™ì•ˆ ëŒ€ê¸°
         yield return new WaitForSeconds(delay);
 
-        // ±âº» ÀüÅõ È¤Àº º¸½º ÀüÅõ ½ÃÀÛ
+        // ê¸°ë³¸ ì „íˆ¬ í˜¹ì€ ë³´ìŠ¤ ì „íˆ¬ ì‹œì‘
         if (eventNumber == 1)
         {
             StartBasicBattle();
@@ -1129,7 +1161,7 @@ public class BattleManager : MonoBehaviour
             StartBossBattle();
             StartCoroutine(DelayDialogue(2, 1f));
         }
-        UIManager.Instance.OnPlayerUI(); // ÀüÅõ »óÅÂ¿¡¼­´Â UI¸¦ º¸¿©ÁÜ
+        UIManager.Instance.OnPlayerUI(); // ì „íˆ¬ ìƒíƒœì—ì„œëŠ” UIë¥¼ ë³´ì—¬ì¤Œ
     }
 
     private IEnumerator DelayDialogue(int eventNumber, float delay)
@@ -1138,30 +1170,30 @@ public class BattleManager : MonoBehaviour
         Boss_Textbar.SetActive(true);
         StartDialogue(eventNumber);
     }
-    // ±âº» ÀüÅõ ½ÃÀÛ
+    // ê¸°ë³¸ ì „íˆ¬ ì‹œì‘
     void StartBasicBattle()
     {
         currentState = BattleState.BasicBattle;
         gameManager.ChangeGameState(GameState.Fight);
 
-        // ·£´ıÀ¸·Î ¹æÀ» »ı¼º
+        // ëœë¤ìœ¼ë¡œ ë°©ì„ ìƒì„±
         int randomRoomIndex = Random.Range(0, roomPrefabs.Length);
         currentRoom = roomPrefabs[randomRoomIndex].GetComponent<Room>();
 
-        // ÀûÀ» ½ºÆù
+        // ì ì„ ìŠ¤í°
         SpawnEnemies();
     }
 
-    // º¸½º ÀüÅõ ½ÃÀÛ
+    // ë³´ìŠ¤ ì „íˆ¬ ì‹œì‘
     void StartBossBattle()
     {
         currentState = BattleState.BossBattle;
         gameManager.ChangeGameState(GameState.Fight);
-        // º¸½º ¹æ »ı¼º, ÀÌµ¿?
+        // ë³´ìŠ¤ ë°© ìƒì„±, ì´ë™?
 
     }
 
-    // Àû ½ºÆù ·ÎÁ÷
+    // ì  ìŠ¤í° ë¡œì§
     void SpawnEnemies()
     {
         if (currentRoom != null)
@@ -1175,7 +1207,7 @@ public class BattleManager : MonoBehaviour
             Debug.LogWarning("Current Room is not set.");
         }
     }
-    // ÀûÀÌ »ç¸ÁÇÏ°Å³ª »ç¶óÁ³À» ¶§ ¸®½ºÆ®¿¡¼­ Á¦°Å
+    // ì ì´ ì‚¬ë§í•˜ê±°ë‚˜ ì‚¬ë¼ì¡Œì„ ë•Œ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì œê±°
     public void RemoveEnemy(GameObject enemy)
     {
         //BattleManager.Instance.RemoveEnemy(this.gameObject)
