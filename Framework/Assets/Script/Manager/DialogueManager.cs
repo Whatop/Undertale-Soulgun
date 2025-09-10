@@ -54,7 +54,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField]
     private NPC gameoverNpc;
     public TypeEffect currentTypeEffect;
-
+    
 
     void Awake()
     {

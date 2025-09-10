@@ -425,7 +425,7 @@ public class UIManager : MonoBehaviour
         keyBindings[3] = KeyCode.D;
         keyBindings[4] = KeyCode.Mouse0;
         keyBindings[5] = KeyCode.Mouse1;
-        keyBindings[6] = KeyCode.F;
+        keyBindings[6] = KeyCode.Z;
         keyBindings[7] = KeyCode.C;
         keyBindings[8] = KeyCode.Tab;
         keyBindings[9] = KeyCode.E;
@@ -542,14 +542,14 @@ public class UIManager : MonoBehaviour
             switch (saveNum)
             {
                 case 0:
-                    if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space) && !dialogueManager.currentNPC.isTalking)
+                    if (Input.GetKeyDown(GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space) && !dialogueManager.currentNPC.isTalking)
                     {
                         SaveComplete();
                     }
                     break;
 
                 case 1:
-                    if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space))
+                    if (Input.GetKeyDown(GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space))
                     {
                         soundManager.SFXPlay("select_sound", 173);
                         isSaveDelay = true;
@@ -563,7 +563,7 @@ public class UIManager : MonoBehaviour
         {
             if (saveNum == -1)
             {
-                if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space))
+                if (Input.GetKeyDown(GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space))
                 {
                     isSaveDelay = true;
                     SaveOff();
@@ -1336,7 +1336,7 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.Z) && inventroy_panelNum != 2)
+        if (Input.GetKeyDown(GetKeyCode(6)) && inventroy_panelNum != 2)
         {
             if (!item_panel.activeSelf)
                 OnPanel(inventroy_curNum);
@@ -1917,7 +1917,7 @@ public class UIManager : MonoBehaviour
         keyBindings[3] = KeyCode.D;
         keyBindings[4] = KeyCode.Mouse0;
         keyBindings[5] = KeyCode.Mouse1;
-        keyBindings[6] = KeyCode.F;
+        keyBindings[6] = KeyCode.Z;
         keyBindings[7] = KeyCode.C;
         keyBindings[8] = KeyCode.Tab;
         keyBindings[9] = KeyCode.E;
@@ -2055,7 +2055,7 @@ public class UIManager : MonoBehaviour
                 soundManager.SFXPlay("move_sound", 185);
                 AdjustValue(1);
             }
-            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Z))
+            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(GetKeyCode(6)))
             {
                 if (currentButtons != null && currentButtons.Length > 0)
                 {

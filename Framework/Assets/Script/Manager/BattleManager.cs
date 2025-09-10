@@ -102,10 +102,42 @@ public class BattleManager : MonoBehaviour
     private Coroutine pendingAutoNext;   // 지연 코루틴 핸들
     private bool awaitingDodgeWindow = false;
     private float hpSnapshot = 0f;
-    private bool nextTalkArmed = false;     // 이번 대사 끝나면 자동 진행할지
-    private float nextTalkDelay = 0f;       // 자동 진행 지연 시간
     private int defaultTextSpeed = 10; // 기본 텍스트 속도(현재 코드의 100 유지)  :contentReference[oaicite:2]{index=2}
 
+    [SerializeField] private KeyCode skipKey = KeyCode.Z;
+    private bool isEventLocked = false;      // 이벤트 중 입력/자동진행 완전 차단
+    private bool skipKeyLatched = false;     // 해제 직후 눌려있던 Z는 무시(재입력 강제)
+    private float unlockCooldownUntil = 0f;  // 해제 후 짧은 디바운스(예: 0.12s)
+
+    // --- 게이트 제어 ---
+    public void BeginEventLock()
+    {
+        isEventLocked = true;
+        skipKeyLatched = Input.GetKey(skipKey); // 눌린 상태면 해제 전까지 무시
+    }
+
+    public void EndEventLock(float antiBounceSec = 0.12f)
+    {
+        isEventLocked = false;
+        unlockCooldownUntil = Time.time + antiBounceSec; // 해제 직후 튀는 입력 방지
+        skipKeyLatched = Input.GetKey(skipKey);          // 키를 한 번 떼도록 강제
+    }
+
+    // --- Z 처리 통합 ---
+    private bool ReadyForSkipInput()
+    {
+        if (isEventLocked) return false;                 // 이벤트 중 완전 차단
+        if (!canSkipOrNext) return false;                // 대사 상태상 불가
+        if (Time.time < unlockCooldownUntil) return false;
+
+        // 해제 이후엔 반드시 한 번 키를 떼야 함
+        if (skipKeyLatched)
+        {
+            if (Input.GetKeyUp(skipKey)) skipKeyLatched = false;
+            return false;
+        }
+        return Input.GetKeyDown(skipKey);
+    }
     public IEnumerator FloweyTutorialSequence()
     {
         // 1) 소울 주입(연출+UI 전환)
@@ -251,6 +283,44 @@ public class BattleManager : MonoBehaviour
     void Update()
     {
         HandleInteraction();
+
+        skipKey = UIManager.Instance.GetKeyCode(6);
+
+        // 1) 이벤트 중이면 입력 전부 차단
+        if (isEventLocked) return;
+
+        // 2) 대화 상태상 스킵/다음이 불가하면 리턴
+        if (!canSkipOrNext) return;
+
+        // 3) 해제 직후 디바운스(연타·중복 입력 방지)
+        if (Time.time < unlockCooldownUntil) return;
+
+        // 4) 해제 직후엔 반드시 키를 한 번 떼게 강제
+        if (skipKeyLatched)
+        {
+            if (Input.GetKeyUp(skipKey))    // Z를 떼는 순간 래치 해제
+                skipKeyLatched = false;
+            return;
+        }
+
+        // 5) 실제 Z 입력 처리
+        if (Input.GetKeyDown(skipKey))
+        {
+            if (currentTypeEffect != null && currentTypeEffect.IsEffecting())
+            {
+                // 타이핑 중이면 전체 출력으로 스킵
+                currentTypeEffect.Skip();
+            }
+            else
+            {
+                // 타이핑이 이미 끝났으면 다음 대사로
+                DisplayNextDialogue();
+
+                // 다음 프레임 중복 입력 방지
+                unlockCooldownUntil = Time.time + 0.05f;
+                skipKeyLatched = true;
+            }
+        }
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             //SetAttack("Split", 0, 1f);//분열
@@ -585,13 +655,13 @@ public class BattleManager : MonoBehaviour
             // 타이핑 효과 중인 경우
             if (IsEffecting())
             {
-                if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space))
+                if (Input.GetKeyDown(UIManager.Instance.GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space))
                 {
                     SkipTypeEffect();
                     UIManager.Instance.isSaveDelay = true;
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space))
+            else if (Input.GetKeyDown(UIManager.Instance.GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space))
             {
                 DisplayNextDialogue();
             }
@@ -727,22 +797,16 @@ public class BattleManager : MonoBehaviour
         SetBossExpression("Default");
         Debug.Log("보스 문장이 완료되었습니다.");
         SetBossExpression("Restare");
-        if (nextTalkArmed)
-            StartCoroutine(NextTalkAfterDelay());
-    }
-    private IEnumerator NextTalkAfterDelay()
-    {
-        // 혹시 모를 잔여 프레임 보호
-        yield return null;
 
-        // 대사 끝난 시점 보장 + 지연
-        if (nextTalkDelay > 0f)
-            yield return new WaitForSeconds(nextTalkDelay);
-
-        nextTalkArmed = false;
-        canSkipOrNext = true; // 필요시 해제
-        DisplayNextDialogue();
+        // next_talk 전용: AutoNextAfter만 사용
+        if (autoNextDelay > 0f)
+        {
+            if (pendingAutoNext != null) { StopCoroutine(pendingAutoNext); pendingAutoNext = null; }
+            pendingAutoNext = StartCoroutine(AutoNextAfter(autoNextDelay));
+            autoNextDelay = 0f;
+        }
     }
+
     public void EndDialogue()
     {
         isTalking = false;
@@ -1004,9 +1068,10 @@ public class BattleManager : MonoBehaviour
                 test_curboss = 1;
                 Boss_Face_UI.SetActive(true);
                 SetBossExpression("Appear");
-                nextTalkArmed = true;
-                nextTalkDelay = 1;   // 나중에 파싱 붙이면 변경
+
                 canSkipOrNext = false;
+                BeginEventLock();
+
                 //ingame sink 키고, ui 키기
                 StartCoroutine(FloweyAnimationThenNextDialogue(dialogue, 1.5f));
         
@@ -1027,33 +1092,25 @@ public class BattleManager : MonoBehaviour
 
             case "DummySpawn":
                 currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, currentBoss.bossID);
-                nextTalkArmed = true;
-                nextTalkDelay = 15.0f;
-
-                // 이벤트 연출(낙하/사운드) 동안 잠금
                 canSkipOrNext = false;
+                BeginEventLock();
 
-                Vector2 topPos = nonePoint.position;
-                topPos = new Vector3(56, 8, nonePoint.position.z);
+                // 연출...
+                Vector2 topPos = new Vector3(56, 8, nonePoint.position.z);
                 GameObject enemyInstance = Instantiate(enemyPrefabs[2], topPos, Quaternion.identity);
                 enemyInstance.GetComponent<Animator>().SetTrigger("Fall");
                 SoundManager.Instance.SFXPlay("Fall", 113);
                 SoundManager.Instance.SFXPlayDelayed("Down", 121, 5f, 1);
                 curEnemies.Add(enemyInstance);
 
-                // 5초 뒤 힐세팅을 실행하면서 스킵/다음 허용
                 StartCoroutine(ExecuteHealSettingWrapper(5f, unlockSkip: true));
                 break;
             // BattleManager.HandleSpecialEvent(...)
             case "next_talk":
-                    // 1) 이 줄 텍스트를 먼저 찍는다 (타이핑 완료 콜백 필요)
-                    currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, currentBoss.bossID);
-
-                    // 2) 완료 후 자동 진행을 '무장'한다
-                    nextTalkArmed = true;
-                    nextTalkDelay = 1.0f;   // 나중에 파싱 붙이면 변경
-                    canSkipOrNext = false;  // 입력 잠금 (선택)
-                    break;
+                currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, currentBoss.bossID);
+                autoNextDelay = ParseDelay(eventType, 1.0f);   // "next_talk:1.2" 지원, 기본 1초
+                                                               // canSkipOrNext = true;  // 입력은 막지 않음(원하면 false로)
+                break;
 
             case "dont_next":
                     // 1) 이 줄 텍스트를 찍는다
@@ -1115,11 +1172,13 @@ public class BattleManager : MonoBehaviour
     private IEnumerator ExecuteHealSettingWrapper(float waitTime, bool unlockSkip = false)
     {
         yield return new WaitForSeconds(waitTime);
+        ExecuteAttack("HealSetting");
 
         if (unlockSkip)
-            canSkipOrNext = true;   // 🔓 이 타이밍부터 Z/Space 허용
-
-        ExecuteAttack("HealSetting");
+        {
+            EndEventLock();
+            canSkipOrNext = true;
+        }
     }
     private IEnumerator WaitEmotionKeyThenContinue()
     {
@@ -1135,6 +1194,9 @@ public class BattleManager : MonoBehaviour
     {
         // waitTime 동안 대기(애니메이션이 끝날 때까지 혹은 넉넉히 잡아둔 시간)
         yield return new WaitForSeconds(waitTime);
+        EndEventLock();           // 이벤트 해제
+        canSkipOrNext = true;     // 이제 Z로 넘길 수 있게
+
         SetBossExpression("Talking");
         currentTypeEffect.SetMsg(dialogue, OnSentenceComplete, defaultTextSpeed, 100);
     }

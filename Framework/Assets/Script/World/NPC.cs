@@ -61,13 +61,13 @@ public class NPC : MonoBehaviour
             // 타이핑 효과 중인 경우
             if (dialogueManager.IsEffecting())
             {
-                if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space))
+                if (Input.GetKeyDown(UIManager.Instance.GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space))
                 {
                     dialogueManager.SkipTypeEffect();
                     UIManager.Instance.isSaveDelay = true;
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space))
+            else if (Input.GetKeyDown(UIManager.Instance.GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space))
             {
                 dialogueManager.DisplayNextSentence(npcID);
             }
@@ -82,7 +82,7 @@ public class NPC : MonoBehaviour
             if(npcID != 1002 && npcID != 1000 && npcID != 1001)
             Highlight(true);
 
-            if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(UIManager.Instance.GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space))
             {
                 StartDialogue();
             }
@@ -136,7 +136,7 @@ public class NPC : MonoBehaviour
             isFirstInteraction = false;
         }
 
-        if (isEvent && (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space)) && isTalking && !UIManager.Instance.isSaveDelay && !UIManager.Instance.isInventroy)
+        if (isEvent && (Input.GetKeyDown(UIManager.Instance.GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space)) && isTalking && !UIManager.Instance.isSaveDelay && !UIManager.Instance.isInventroy)
         {
             // 현재 대사 출력 중인 경우와 완료된 상태를 구분
             if (dialogueManager.IsEffecting())
@@ -154,7 +154,7 @@ public class NPC : MonoBehaviour
     private void HandleOverDialogue()
     {
         // Z 또는 Space 키가 눌렸고, 대화 진행이 가능한 상태에서만 실행
-        if ((Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.Space)) && canAdvanceDialogue)
+        if ((Input.GetKeyDown(UIManager.Instance.GetKeyCode(6)) || Input.GetKeyDown(KeyCode.Space)) && canAdvanceDialogue)
         {
             // 현재 대사가 끝난 경우에만 다음 문장으로 넘어감
             dialogueManager.DisplayNextGameOver();

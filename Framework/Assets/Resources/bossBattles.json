@@ -131,20 +131,30 @@
           "attack": "Attack4"
         },
         {
-          "text": "* 좋아.. 이제 너를 나갈수있게 도와줄게\n 대신 너의 여정에 함께해도될까?",
+          "text": "* 좋아! 이제 너를 나갈수있게 도와줄게\n 대신 너의 여정에 함께해도될까?",
           "expression": "Talking"
         },
         {
-          "text": "피했어..? \n<indent=6%>재밌네 이것도 피해보시지.",
+          "text": "* 피했어..? \n<indent=6%>재밌네 이것도 피해보시지.",
           "expression": "Talking"
         },
         {
-          "text": "내가 이걸 빌려줄게!",
+          "text": "* 너 손에있는 영혼 표출기..\n<indent=6%> 내가 사용할수있게 해줄게.",
           "expression": "Talking",
           "eventType": "tutorialShot"
         },
         {
-          "text": "아! 이것도..! ",
+          "text": "* 얍!",
+          "expression": "Talking",
+          "eventType": "tutorialShot"
+        },
+        {
+          "text": "* 아! 이것도..! ",
+          "expression": "Talking",
+          "eventType": "Special"
+        },
+        {
+          "text": "플라위를 부를수있게되었다.",
           "expression": "Talking",
           "eventType": "Special"
         },
